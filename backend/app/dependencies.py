@@ -1,0 +1,38 @@
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.database import get_db
+from app.repositories.client import ClientRepository
+from app.repositories.technician import TechnicianRepository
+from app.repositories.work_order import WorkOrderRepository
+from app.services.client import ClientService
+from app.services.technician import TechnicianService
+from app.services.work_order import WorkOrderService
+
+
+def get_client_repo(db: AsyncSession = Depends(get_db)) -> ClientRepository:
+    return ClientRepository(db)
+
+
+def get_technician_repo(db: AsyncSession = Depends(get_db)) -> TechnicianRepository:
+    return TechnicianRepository(db)
+
+
+def get_work_order_repo(db: AsyncSession = Depends(get_db)) -> WorkOrderRepository:
+    return WorkOrderRepository(db)
+
+
+def get_client_service(repo: ClientRepository = Depends(get_client_repo)) -> ClientService:
+    return ClientService(repo)
+
+
+def get_technician_service(
+    repo: TechnicianRepository = Depends(get_technician_repo),
+) -> TechnicianService:
+    return TechnicianService(repo)
+
+
+def get_work_order_service(
+    repo: WorkOrderRepository = Depends(get_work_order_repo),
+) -> WorkOrderService:
+    return WorkOrderService(repo)

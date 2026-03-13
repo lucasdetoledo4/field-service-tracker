@@ -1,44 +1,32 @@
 import uuid
 
 from fastapi import HTTPException
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.client import Client
+from app.repositories.client import ClientRepository
 from app.schemas.client import ClientCreate, ClientUpdate
 
 
-async def list_clients(db: AsyncSession) -> list[Client]:
-    result = await db.execute(select(Client))
-    return list(result.scalars().all())
+class ClientService:
+    def __init__(self, repo: ClientRepository) -> None:
+        self.repo = repo
 
+    async def list_clients(self) -> list[Client]:
+        return await self.repo.get_all()
 
-async def get_client(db: AsyncSession, client_id: uuid.UUID) -> Client:
-    result = await db.execute(select(Client).where(Client.id == client_id))
-    client = result.scalar_one_or_none()
-    if client is None:
-        raise HTTPException(status_code=404, detail="Client not found")
-    return client
+    async def get_client(self, client_id: uuid.UUID) -> Client:
+        client = await self.repo.get_by_id(client_id)
+        if client is None:
+            raise HTTPException(status_code=404, detail="Client not found")
+        return client
 
+    async def create_client(self, data: ClientCreate) -> Client:
+        return await self.repo.create(data)
 
-async def create_client(db: AsyncSession, data: ClientCreate) -> Client:
-    client = Client(**data.model_dump())
-    db.add(client)
-    await db.commit()
-    await db.refresh(client)
-    return client
+    async def update_client(self, client_id: uuid.UUID, data: ClientUpdate) -> Client:
+        client = await self.get_client(client_id)
+        return await self.repo.update(client, data)
 
-
-async def update_client(db: AsyncSession, client_id: uuid.UUID, data: ClientUpdate) -> Client:
-    client = await get_client(db, client_id)
-    for key, value in data.model_dump(exclude_unset=True).items():
-        setattr(client, key, value)
-    await db.commit()
-    await db.refresh(client)
-    return client
-
-
-async def delete_client(db: AsyncSession, client_id: uuid.UUID) -> None:
-    client = await get_client(db, client_id)
-    await db.delete(client)
-    await db.commit()
+    async def delete_client(self, client_id: uuid.UUID) -> None:
+        client = await self.get_client(client_id)
+        await self.repo.delete(client)
