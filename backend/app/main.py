@@ -1,12 +1,13 @@
 import sentry_sdk
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.requests import Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.starlette import StarletteIntegration
 
 from app.config import settings
+from app.constants import API_PREFIX
 from app.exceptions import AppError, InvalidTransitionError, NotFoundError
 from app.routers.clients import router as clients_router
 from app.routers.technicians import router as technicians_router
@@ -19,7 +20,14 @@ if settings.SENTRY_DSN:
         traces_sample_rate=1.0,
     )
 
-app = FastAPI(title="Field Service Tracker")
+app = FastAPI(
+    title="Field Service Tracker",
+    swagger_ui_parameters={
+        "docExpansion": "none",
+        "filter": True,
+        "tagsSorter": "alpha",
+    },
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -29,9 +37,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(clients_router)
-app.include_router(technicians_router)
-app.include_router(work_orders_router)
+api_router = APIRouter(prefix=API_PREFIX)
+api_router.include_router(clients_router)
+api_router.include_router(technicians_router)
+api_router.include_router(work_orders_router)
+app.include_router(api_router)
+
+
+@app.get("/scalar", include_in_schema=False)
+async def scalar_ui() -> HTMLResponse:
+    return HTMLResponse("""<!DOCTYPE html>
+<html>
+<head>
+  <title>Field Service Tracker — API Reference</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+  <script
+    id="api-reference"
+    data-url="/openapi.json"
+    data-configuration='{"theme":"purple","layout":"modern"}'
+  ></script>
+  <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+</body>
+</html>""")
 
 
 @app.exception_handler(NotFoundError)

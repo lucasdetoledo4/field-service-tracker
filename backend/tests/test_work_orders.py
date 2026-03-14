@@ -1,10 +1,14 @@
 import pytest
 from httpx import AsyncClient
 
+from app.constants import API_PREFIX
+
+WORK_ORDERS = f"{API_PREFIX}/work-orders"
+
 
 async def test_create_work_order(client: AsyncClient):
     response = await client.post(
-        "/work-orders", json={"title": "Fix HVAC", "priority": "high"}
+        WORK_ORDERS, json={"title": "Fix HVAC", "priority": "high"}
     )
     assert response.status_code == 201
     data = response.json()
@@ -15,65 +19,65 @@ async def test_create_work_order(client: AsyncClient):
 
 
 async def test_list_work_orders(client: AsyncClient):
-    await client.post("/work-orders", json={"title": "WO 1"})
-    await client.post("/work-orders", json={"title": "WO 2"})
-    response = await client.get("/work-orders")
+    await client.post(WORK_ORDERS, json={"title": "WO 1"})
+    await client.post(WORK_ORDERS, json={"title": "WO 2"})
+    response = await client.get(WORK_ORDERS)
     assert response.status_code == 200
     assert len(response.json()) == 2
 
 
 async def test_get_work_order(client: AsyncClient):
-    create = await client.post("/work-orders", json={"title": "WO X"})
+    create = await client.post(WORK_ORDERS, json={"title": "WO X"})
     wo_id = create.json()["id"]
-    response = await client.get(f"/work-orders/{wo_id}")
+    response = await client.get(f"{WORK_ORDERS}/{wo_id}")
     assert response.status_code == 200
     assert response.json()["id"] == wo_id
 
 
 async def test_update_work_order(client: AsyncClient):
-    create = await client.post("/work-orders", json={"title": "Old Title"})
+    create = await client.post(WORK_ORDERS, json={"title": "Old Title"})
     wo_id = create.json()["id"]
-    response = await client.patch(f"/work-orders/{wo_id}", json={"title": "New Title"})
+    response = await client.patch(f"{WORK_ORDERS}/{wo_id}", json={"title": "New Title"})
     assert response.status_code == 200
     assert response.json()["title"] == "New Title"
 
 
 async def test_delete_work_order(client: AsyncClient):
-    create = await client.post("/work-orders", json={"title": "To Delete"})
+    create = await client.post(WORK_ORDERS, json={"title": "To Delete"})
     wo_id = create.json()["id"]
-    response = await client.delete(f"/work-orders/{wo_id}")
+    response = await client.delete(f"{WORK_ORDERS}/{wo_id}")
     assert response.status_code == 204
-    get_response = await client.get(f"/work-orders/{wo_id}")
+    get_response = await client.get(f"{WORK_ORDERS}/{wo_id}")
     assert get_response.status_code == 404
 
 
 async def test_valid_transition_pending_to_assigned(client: AsyncClient):
-    create = await client.post("/work-orders", json={"title": "WO Transition"})
+    create = await client.post(WORK_ORDERS, json={"title": "WO Transition"})
     wo_id = create.json()["id"]
     response = await client.post(
-        f"/work-orders/{wo_id}/transition", json={"to_status": "assigned"}
+        f"{WORK_ORDERS}/{wo_id}/transition", json={"to_status": "assigned"}
     )
     assert response.status_code == 200
     assert response.json()["status"] == "assigned"
 
 
 async def test_invalid_transition_returns_400(client: AsyncClient):
-    create = await client.post("/work-orders", json={"title": "WO Invalid"})
+    create = await client.post(WORK_ORDERS, json={"title": "WO Invalid"})
     wo_id = create.json()["id"]
     response = await client.post(
-        f"/work-orders/{wo_id}/transition", json={"to_status": "completed"}
+        f"{WORK_ORDERS}/{wo_id}/transition", json={"to_status": "completed"}
     )
     assert response.status_code == 400
 
 
 async def test_history_recorded_after_transition(client: AsyncClient):
-    create = await client.post("/work-orders", json={"title": "WO History"})
+    create = await client.post(WORK_ORDERS, json={"title": "WO History"})
     wo_id = create.json()["id"]
     await client.post(
-        f"/work-orders/{wo_id}/transition",
+        f"{WORK_ORDERS}/{wo_id}/transition",
         json={"to_status": "assigned", "notes": "Assigned to tech"},
     )
-    response = await client.get(f"/work-orders/{wo_id}/history")
+    response = await client.get(f"{WORK_ORDERS}/{wo_id}/history")
     assert response.status_code == 200
     history = response.json()
     assert len(history) == 1
