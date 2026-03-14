@@ -1,23 +1,6 @@
-import { Text, Flex } from '@radix-ui/themes'
 import { ArrowRight } from 'lucide-react'
+import { StatusBadge } from '../Badges'
 import type { WorkOrderStatusHistory } from '../../types/work-order'
-
-const STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-gray-100 text-gray-700',
-  assigned: 'bg-blue-100 text-blue-700',
-  in_progress: 'bg-yellow-100 text-yellow-800',
-  completed: 'bg-green-100 text-green-700',
-  cancelled: 'bg-red-100 text-red-700',
-}
-
-function StatusPill({ status }: { status: string }) {
-  const cls = STATUS_COLORS[status] ?? 'bg-gray-100 text-gray-700'
-  return (
-    <span className={`px-2 py-0.5 rounded text-xs font-medium ${cls}`}>
-      {status.replace('_', ' ')}
-    </span>
-  )
-}
 
 interface Props {
   history: WorkOrderStatusHistory[]
@@ -25,33 +8,50 @@ interface Props {
 
 export default function HistoryTimeline({ history }: Props) {
   if (history.length === 0) {
-    return <Text size="2" color="gray">No history yet.</Text>
+    return (
+      <div className="text-center py-8 text-sm text-slate-400">
+        No status changes recorded yet.
+      </div>
+    )
   }
 
   return (
-    <div className="space-y-3">
-      {history.map((entry) => (
-        <div key={entry.id} className="flex items-start gap-3 text-sm">
-          <div className="flex-shrink-0 w-1 self-stretch bg-gray-200 rounded mt-1" />
-          <div className="flex-1">
-            <Flex align="center" gap="1" wrap="wrap">
-              {entry.from_status ? (
-                <>
-                  <StatusPill status={entry.from_status} />
-                  <ArrowRight size={12} className="text-gray-400" />
-                </>
-              ) : null}
-              <StatusPill status={entry.to_status} />
-            </Flex>
-            {entry.notes && (
-              <Text size="1" color="gray" as="div" mt="1">{entry.notes}</Text>
+    <ol className="space-y-0">
+      {history.map((entry, idx) => (
+        <li key={entry.id} className="flex gap-4">
+          {/* Timeline line + dot */}
+          <div className="flex flex-col items-center">
+            <div className="w-2.5 h-2.5 rounded-full bg-indigo-400 border-2 border-white ring-1 ring-indigo-200 mt-1 flex-shrink-0" />
+            {idx < history.length - 1 && (
+              <div className="w-px flex-1 bg-slate-200 mt-1" />
             )}
-            <Text size="1" color="gray" as="div">
-              {new Date(entry.created_at).toLocaleString()}
-            </Text>
           </div>
-        </div>
+
+          {/* Content */}
+          <div className="pb-5 flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              {entry.from_status && (
+                <>
+                  <StatusBadge status={entry.from_status} />
+                  <ArrowRight size={12} className="text-slate-400 flex-shrink-0" />
+                </>
+              )}
+              <StatusBadge status={entry.to_status} />
+            </div>
+            {entry.notes && (
+              <p className="text-sm text-slate-600 mt-1.5 bg-slate-50 border border-slate-100 rounded-md px-3 py-2">
+                {entry.notes}
+              </p>
+            )}
+            <p className="text-xs text-slate-400 mt-1.5">
+              {new Date(entry.created_at).toLocaleString('en-US', {
+                month: 'short', day: 'numeric', year: 'numeric',
+                hour: '2-digit', minute: '2-digit',
+              })}
+            </p>
+          </div>
+        </li>
       ))}
-    </div>
+    </ol>
   )
 }

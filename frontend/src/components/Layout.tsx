@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { Users, Wrench, ClipboardList } from 'lucide-react'
+import { Users, Wrench, ClipboardList, Zap } from 'lucide-react'
 
 const navItems = [
   { to: '/clients', label: 'Clients', icon: Users },
@@ -9,31 +9,38 @@ const navItems = [
 
 export default function Layout() {
   return (
-    <div className="flex h-screen">
-      <aside className="w-56 flex-shrink-0 border-r border-gray-200 bg-gray-50 flex flex-col">
-        <div className="px-4 py-5 border-b border-gray-200">
-          <h1 className="text-sm font-semibold text-gray-900 leading-tight">
-            Field Service Tracker
-          </h1>
+    <div className="flex h-screen bg-slate-50">
+      <aside className="w-60 flex-shrink-0 bg-slate-900 flex flex-col">
+        <div className="px-5 py-5 border-b border-slate-700/60">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 bg-indigo-500 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Zap size={14} className="text-white" />
+            </div>
+            <span className="text-white font-semibold text-sm tracking-tight">Field Service</span>
+          </div>
         </div>
-        <nav className="flex-1 px-2 py-3 space-y-0.5">
+        <nav className="flex-1 px-3 py-4 space-y-0.5">
+          <p className="px-3 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Menu</p>
           {navItems.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
               to={to}
               className={({ isActive }) =>
-                `flex items-center gap-2.5 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                   isActive
-                    ? 'bg-blue-50 text-blue-700'
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    ? 'bg-indigo-600 text-white shadow-sm'
+                    : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
                 }`
               }
             >
-              <Icon size={16} />
+              <Icon size={15} />
               {label}
             </NavLink>
           ))}
         </nav>
+        <div className="px-5 py-4 border-t border-slate-700/60">
+          <p className="text-xs text-slate-600">v1.0 · Field Service Tracker</p>
+        </div>
       </aside>
       <main className="flex-1 overflow-auto">
         <Outlet />

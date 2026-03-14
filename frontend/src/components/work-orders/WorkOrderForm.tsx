@@ -14,11 +14,14 @@ interface Props {
   loading?: boolean
 }
 
-const priorities: WorkOrderPriority[] = ['low', 'medium', 'high', 'urgent']
+const PRIORITIES: WorkOrderPriority[] = ['low', 'medium', 'high', 'urgent']
+const PRIORITY_LABELS: Record<WorkOrderPriority, string> = {
+  low: 'Low', medium: 'Medium', high: 'High', urgent: 'Urgent',
+}
 
-export default function WorkOrderForm({
-  defaultValues, clients, technicians, onSubmit, onCancel, loading,
-}: Props) {
+const NONE = '_none_'
+
+export default function WorkOrderForm({ defaultValues, clients, technicians, onSubmit, onCancel, loading }: Props) {
   const { register, handleSubmit, reset, control, formState: { errors } } = useForm<WorkOrderCreate>({
     defaultValues: {
       title: defaultValues?.title ?? '',
@@ -26,9 +29,7 @@ export default function WorkOrderForm({
       priority: defaultValues?.priority ?? 'medium',
       client_id: defaultValues?.client_id ?? undefined,
       technician_id: defaultValues?.technician_id ?? undefined,
-      scheduled_at: defaultValues?.scheduled_at
-        ? defaultValues.scheduled_at.slice(0, 16)
-        : '',
+      scheduled_at: defaultValues?.scheduled_at ? defaultValues.scheduled_at.slice(0, 16) : '',
     },
   })
 
@@ -39,9 +40,7 @@ export default function WorkOrderForm({
       priority: defaultValues?.priority ?? 'medium',
       client_id: defaultValues?.client_id ?? undefined,
       technician_id: defaultValues?.technician_id ?? undefined,
-      scheduled_at: defaultValues?.scheduled_at
-        ? defaultValues.scheduled_at.slice(0, 16)
-        : '',
+      scheduled_at: defaultValues?.scheduled_at ? defaultValues.scheduled_at.slice(0, 16) : '',
     })
   }, [defaultValues, reset])
 
@@ -56,86 +55,94 @@ export default function WorkOrderForm({
 
   return (
     <form onSubmit={handleSubmit(handleValid)}>
-      <Grid gap="3">
-        <label>
-          <Text size="2" weight="medium" mb="1" as="div">Title *</Text>
+      <Grid gap="4">
+        <label className="block">
+          <Text size="2" weight="medium" className="text-slate-700 mb-1.5 block">
+            Title <span className="text-red-500">*</span>
+          </Text>
           <TextField.Root
-            placeholder="Work order title"
+            size="2"
+            placeholder="e.g. Replace HVAC unit"
             {...register('title', { required: 'Title is required' })}
           />
-          {errors.title && <Text size="1" color="red">{errors.title.message}</Text>}
+          {errors.title && <Text size="1" className="text-red-500 mt-1 block">{errors.title.message}</Text>}
         </label>
-        <label>
-          <Text size="2" weight="medium" mb="1" as="div">Description</Text>
-          <TextArea placeholder="Describe the work to be done…" rows={3} {...register('description')} />
-        </label>
-        <label>
-          <Text size="2" weight="medium" mb="1" as="div">Priority</Text>
-          <Controller
-            name="priority"
-            control={control}
-            render={({ field }) => (
-              <Select.Root value={field.value ?? 'medium'} onValueChange={field.onChange}>
-                <Select.Trigger />
-                <Select.Content>
-                  {priorities.map((p) => (
-                    <Select.Item key={p} value={p}>
-                      {p.charAt(0).toUpperCase() + p.slice(1)}
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select.Root>
-            )}
+
+        <label className="block">
+          <Text size="2" weight="medium" className="text-slate-700 mb-1.5 block">Description</Text>
+          <TextArea
+            size="2"
+            placeholder="Describe the work to be done…"
+            rows={3}
+            {...register('description')}
           />
         </label>
-        <label>
-          <Text size="2" weight="medium" mb="1" as="div">Client</Text>
-          <Controller
-            name="client_id"
-            control={control}
-            render={({ field }) => (
-              <Select.Root value={field.value ?? ''} onValueChange={field.onChange}>
-                <Select.Trigger placeholder="Select client…" />
-                <Select.Content>
-                  <Select.Item value="">None</Select.Item>
-                  {clients.map((c) => (
-                    <Select.Item key={c.id} value={c.id}>{c.name}</Select.Item>
-                  ))}
-                </Select.Content>
-              </Select.Root>
-            )}
-          />
-        </label>
-        <label>
-          <Text size="2" weight="medium" mb="1" as="div">Technician</Text>
-          <Controller
-            name="technician_id"
-            control={control}
-            render={({ field }) => (
-              <Select.Root value={field.value ?? ''} onValueChange={field.onChange}>
-                <Select.Trigger placeholder="Select technician…" />
-                <Select.Content>
-                  <Select.Item value="">None</Select.Item>
-                  {technicians.map((t) => (
-                    <Select.Item key={t.id} value={t.id}>{t.name}</Select.Item>
-                  ))}
-                </Select.Content>
-              </Select.Root>
-            )}
-          />
-        </label>
-        <label>
-          <Text size="2" weight="medium" mb="1" as="div">Scheduled At</Text>
-          <TextField.Root type="datetime-local" {...register('scheduled_at')} />
-        </label>
+
+        <Grid columns="2" gap="3">
+          <label className="block">
+            <Text size="2" weight="medium" className="text-slate-700 mb-1.5 block">Priority</Text>
+            <Controller
+              name="priority"
+              control={control}
+              render={({ field }) => (
+                <Select.Root value={field.value ?? 'medium'} onValueChange={field.onChange}>
+                  <Select.Trigger className="w-full" />
+                  <Select.Content>
+                    {PRIORITIES.map((p) => (
+                      <Select.Item key={p} value={p}>{PRIORITY_LABELS[p]}</Select.Item>
+                    ))}
+                  </Select.Content>
+                </Select.Root>
+              )}
+            />
+          </label>
+
+          <label className="block">
+            <Text size="2" weight="medium" className="text-slate-700 mb-1.5 block">Scheduled At</Text>
+            <TextField.Root size="2" type="datetime-local" {...register('scheduled_at')} />
+          </label>
+        </Grid>
+
+        <Grid columns="2" gap="3">
+          <label className="block">
+            <Text size="2" weight="medium" className="text-slate-700 mb-1.5 block">Client</Text>
+            <Controller
+              name="client_id"
+              control={control}
+              render={({ field }) => (
+                <Select.Root value={field.value ?? NONE} onValueChange={(v) => field.onChange(v === NONE ? null : v)}>
+                  <Select.Trigger placeholder="Select client…" className="w-full" />
+                  <Select.Content>
+                    <Select.Item value={NONE}>No client</Select.Item>
+                    {clients.map((c) => <Select.Item key={c.id} value={c.id}>{c.name}</Select.Item>)}
+                  </Select.Content>
+                </Select.Root>
+              )}
+            />
+          </label>
+
+          <label className="block">
+            <Text size="2" weight="medium" className="text-slate-700 mb-1.5 block">Technician</Text>
+            <Controller
+              name="technician_id"
+              control={control}
+              render={({ field }) => (
+                <Select.Root value={field.value ?? NONE} onValueChange={(v) => field.onChange(v === NONE ? null : v)}>
+                  <Select.Trigger placeholder="Select technician…" className="w-full" />
+                  <Select.Content>
+                    <Select.Item value={NONE}>Unassigned</Select.Item>
+                    {technicians.map((t) => <Select.Item key={t.id} value={t.id}>{t.name}</Select.Item>)}
+                  </Select.Content>
+                </Select.Root>
+              )}
+            />
+          </label>
+        </Grid>
       </Grid>
-      <Flex gap="2" justify="end" mt="4">
-        <Button type="button" variant="soft" color="gray" onClick={onCancel} disabled={loading}>
-          Cancel
-        </Button>
-        <Button type="submit" loading={loading}>
-          Save
-        </Button>
+
+      <Flex gap="2" justify="end" mt="5">
+        <Button type="button" variant="soft" color="gray" onClick={onCancel} disabled={loading}>Cancel</Button>
+        <Button type="submit" loading={loading}>Save changes</Button>
       </Flex>
     </form>
   )

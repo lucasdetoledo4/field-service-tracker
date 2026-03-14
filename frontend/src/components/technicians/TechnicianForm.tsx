@@ -35,51 +35,55 @@ export default function TechnicianForm({ defaultValues, onSubmit, onCancel, load
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Grid gap="3">
-        <label>
-          <Text size="2" weight="medium" mb="1" as="div">Name *</Text>
+      <Grid gap="4">
+        <label className="block">
+          <Text size="2" weight="medium" className="text-slate-700 mb-1.5 block">
+            Name <span className="text-red-500">*</span>
+          </Text>
           <TextField.Root
-            placeholder="Technician name"
+            size="2"
+            placeholder="e.g. Jane Smith"
             {...register('name', { required: 'Name is required' })}
           />
-          {errors.name && <Text size="1" color="red">{errors.name.message}</Text>}
+          {errors.name && (
+            <Text size="1" className="text-red-500 mt-1 block">{errors.name.message}</Text>
+          )}
         </label>
-        <label>
-          <Text size="2" weight="medium" mb="1" as="div">Email</Text>
-          <TextField.Root
-            type="email"
-            placeholder="email@example.com"
-            {...register('email')}
-          />
+
+        <Grid columns="2" gap="3">
+          <label className="block">
+            <Text size="2" weight="medium" className="text-slate-700 mb-1.5 block">Email</Text>
+            <TextField.Root size="2" type="email" placeholder="jane@example.com" {...register('email')} />
+          </label>
+          <label className="block">
+            <Text size="2" weight="medium" className="text-slate-700 mb-1.5 block">Phone</Text>
+            <TextField.Root size="2" placeholder="+1 555 000 0000" {...register('phone')} />
+          </label>
+        </Grid>
+
+        <label className="block">
+          <Text size="2" weight="medium" className="text-slate-700 mb-1.5 block">Specialty</Text>
+          <TextField.Root size="2" placeholder="e.g. HVAC, Electrical, Plumbing" {...register('specialty')} />
         </label>
-        <label>
-          <Text size="2" weight="medium" mb="1" as="div">Phone</Text>
-          <TextField.Root
-            placeholder="+1 555 000 0000"
-            {...register('phone')}
-          />
-        </label>
-        <label>
-          <Text size="2" weight="medium" mb="1" as="div">Specialty</Text>
-          <TextField.Root
-            placeholder="e.g. HVAC, Electrical"
-            {...register('specialty')}
-          />
-        </label>
-        <Flex align="center" gap="2">
+
+        <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200">
+          <div>
+            <Text size="2" weight="medium" className="text-slate-700">Active technician</Text>
+            <Text size="1" className="text-slate-400 block">Can be assigned to work orders</Text>
+          </div>
           <Switch
             checked={isActive ?? true}
             onCheckedChange={(v) => setValue('is_active', v)}
           />
-          <Text size="2">Active</Text>
-        </Flex>
+        </div>
       </Grid>
-      <Flex gap="2" justify="end" mt="4">
+
+      <Flex gap="2" justify="end" mt="5">
         <Button type="button" variant="soft" color="gray" onClick={onCancel} disabled={loading}>
           Cancel
         </Button>
         <Button type="submit" loading={loading}>
-          Save
+          Save changes
         </Button>
       </Flex>
     </form>
