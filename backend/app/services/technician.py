@@ -1,7 +1,6 @@
 import uuid
 
-from fastapi import HTTPException
-
+from app.exceptions import NotFoundError
 from app.models.technician import Technician
 from app.repositories.technician import TechnicianRepository
 from app.schemas.technician import TechnicianCreate, TechnicianUpdate
@@ -17,7 +16,7 @@ class TechnicianService:
     async def get_technician(self, technician_id: uuid.UUID) -> Technician:
         technician = await self.repo.get_by_id(technician_id)
         if technician is None:
-            raise HTTPException(status_code=404, detail="Technician not found")
+            raise NotFoundError("Technician", technician_id)
         return technician
 
     async def create_technician(self, data: TechnicianCreate) -> Technician:

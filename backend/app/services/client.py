@@ -1,7 +1,6 @@
 import uuid
 
-from fastapi import HTTPException
-
+from app.exceptions import NotFoundError
 from app.models.client import Client
 from app.repositories.client import ClientRepository
 from app.schemas.client import ClientCreate, ClientUpdate
@@ -17,7 +16,7 @@ class ClientService:
     async def get_client(self, client_id: uuid.UUID) -> Client:
         client = await self.repo.get_by_id(client_id)
         if client is None:
-            raise HTTPException(status_code=404, detail="Client not found")
+            raise NotFoundError("Client", client_id)
         return client
 
     async def create_client(self, data: ClientCreate) -> Client:

@@ -1,8 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 
-from fastapi import HTTPException
-
+from app.exceptions import InvalidTransitionError, NotFoundError
 from app.models.work_order import (
     VALID_TRANSITIONS,
     WorkOrder,
@@ -35,7 +34,7 @@ class WorkOrderService:
     async def get_work_order(self, work_order_id: uuid.UUID) -> WorkOrder:
         work_order = await self.repo.get_by_id(work_order_id)
         if work_order is None:
-            raise HTTPException(status_code=404, detail="Work order not found")
+            raise NotFoundError("Work order", work_order_id)
         return work_order
 
     async def create_work_order(self, data: WorkOrderCreate) -> WorkOrder:
@@ -58,10 +57,7 @@ class WorkOrderService:
         work_order = await self.get_work_order(work_order_id)
         current_status = WorkOrderStatus(work_order.status)
         if to_status not in VALID_TRANSITIONS[current_status]:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Cannot transition from '{current_status.value}' to '{to_status.value}'",
-            )
+            raise InvalidTransitionError(current_status.value, to_status.value)
         work_order.status = to_status.value
         if to_status == WorkOrderStatus.COMPLETED:
             work_order.completed_at = datetime.now(timezone.utc)
