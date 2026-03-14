@@ -13,7 +13,7 @@ from app.routers.technicians import router as technicians_router
 from app.routers.work_orders import router as work_orders_router
 
 if settings.SENTRY_DSN:
-    sentry_sdk.init(
+    _ = sentry_sdk.init(
         dsn=settings.SENTRY_DSN,
         integrations=[StarletteIntegration(), FastApiIntegration()],
         traces_sample_rate=1.0,
@@ -40,11 +40,15 @@ async def not_found_handler(request: Request, exc: NotFoundError) -> JSONRespons
 
 
 @app.exception_handler(InvalidTransitionError)
-async def invalid_transition_handler(request: Request, exc: InvalidTransitionError) -> JSONResponse:
+async def invalid_transition_handler(
+    request: Request, exc: InvalidTransitionError
+) -> JSONResponse:
     return JSONResponse(status_code=400, content={"detail": str(exc)})
 
 
 @app.exception_handler(AppError)
 async def app_error_handler(request: Request, exc: AppError) -> JSONResponse:
     sentry_sdk.capture_exception(exc)
-    return JSONResponse(status_code=500, content={"detail": "An unexpected error occurred"})
+    return JSONResponse(
+        status_code=500, content={"detail": "An unexpected error occurred"}
+    )
