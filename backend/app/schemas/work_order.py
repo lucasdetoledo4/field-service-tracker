@@ -1,12 +1,11 @@
 import uuid
 from datetime import datetime
 
-from pydantic import BaseModel
-
 from app.models.work_order import WorkOrderPriority, WorkOrderStatus
+from app.schemas.base import CustomBaseModel
 
 
-class WorkOrderCreate(BaseModel):
+class WorkOrderCreate(CustomBaseModel):
     title: str
     description: str | None = None
     priority: WorkOrderPriority = WorkOrderPriority.MEDIUM
@@ -15,7 +14,7 @@ class WorkOrderCreate(BaseModel):
     scheduled_at: datetime | None = None
 
 
-class WorkOrderUpdate(BaseModel):
+class WorkOrderUpdate(CustomBaseModel):
     title: str | None = None
     description: str | None = None
     priority: WorkOrderPriority | None = None
@@ -24,7 +23,7 @@ class WorkOrderUpdate(BaseModel):
     scheduled_at: datetime | None = None
 
 
-class WorkOrderRead(BaseModel):
+class WorkOrderRead(CustomBaseModel):
     id: uuid.UUID
     title: str
     description: str | None
@@ -37,20 +36,16 @@ class WorkOrderRead(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    model_config = {"from_attributes": True}
 
-
-class StatusTransitionRequest(BaseModel):
+class StatusTransitionRequest(CustomBaseModel):
     to_status: WorkOrderStatus
     notes: str | None = None
 
 
-class WorkOrderStatusHistoryRead(BaseModel):
+class WorkOrderStatusHistoryRead(CustomBaseModel):
     id: uuid.UUID
     work_order_id: uuid.UUID
     from_status: WorkOrderStatus | None
     to_status: WorkOrderStatus
     notes: str | None
     created_at: datetime
-
-    model_config = {"from_attributes": True}

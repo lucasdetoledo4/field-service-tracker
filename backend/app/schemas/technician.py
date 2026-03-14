@@ -1,10 +1,10 @@
 import uuid
 from datetime import datetime
 
-from pydantic import BaseModel
+from app.schemas.base import CustomBaseModel
 
 
-class TechnicianCreate(BaseModel):
+class TechnicianCreate(CustomBaseModel):
     name: str
     email: str | None = None
     phone: str | None = None
@@ -12,7 +12,7 @@ class TechnicianCreate(BaseModel):
     is_active: bool = True
 
 
-class TechnicianUpdate(BaseModel):
+class TechnicianUpdate(CustomBaseModel):
     name: str | None = None
     email: str | None = None
     phone: str | None = None
@@ -20,7 +20,7 @@ class TechnicianUpdate(BaseModel):
     is_active: bool | None = None
 
 
-class TechnicianRead(BaseModel):
+class TechnicianRead(CustomBaseModel):
     id: uuid.UUID
     name: str
     email: str | None
@@ -29,5 +29,3 @@ class TechnicianRead(BaseModel):
     is_active: bool
     created_at: datetime
     updated_at: datetime
-
-    model_config = {"from_attributes": True}

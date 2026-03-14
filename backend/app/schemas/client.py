@@ -1,24 +1,24 @@
 import uuid
 from datetime import datetime
 
-from pydantic import BaseModel
+from app.schemas.base import CustomBaseModel
 
 
-class ClientCreate(BaseModel):
+class ClientCreate(CustomBaseModel):
     name: str
     email: str | None = None
     phone: str | None = None
     address: str | None = None
 
 
-class ClientUpdate(BaseModel):
+class ClientUpdate(CustomBaseModel):
     name: str | None = None
     email: str | None = None
     phone: str | None = None
     address: str | None = None
 
 
-class ClientRead(BaseModel):
+class ClientRead(CustomBaseModel):
     id: uuid.UUID
     name: str
     email: str | None
@@ -26,5 +26,3 @@ class ClientRead(BaseModel):
     address: str | None
     created_at: datetime
     updated_at: datetime
-
-    model_config = {"from_attributes": True}
