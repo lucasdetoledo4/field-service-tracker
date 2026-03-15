@@ -5,11 +5,11 @@ from fastapi.requests import Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.starlette import StarletteIntegration
-
 from app.config import settings
 from app.constants import API_PREFIX
 from app.exceptions import AppError, InvalidTransitionError, NotFoundError
 from app.routers.clients import router as clients_router
+from app.routers.health import router as health_router
 from app.routers.technicians import router as technicians_router
 from app.routers.work_orders import router as work_orders_router
 
@@ -42,6 +42,7 @@ api_router.include_router(clients_router)
 api_router.include_router(technicians_router)
 api_router.include_router(work_orders_router)
 app.include_router(api_router)
+app.include_router(health_router)
 
 
 @app.get("/scalar", include_in_schema=False)
