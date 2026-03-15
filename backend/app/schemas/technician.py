@@ -1,22 +1,24 @@
 import uuid
 from datetime import datetime
 
-from app.schemas.base import CustomBaseModel, PaginationMeta
+from pydantic import EmailStr
+
+from app.schemas.base import CustomBaseModel, NameStr, PaginationMeta, PhoneStr, ShortStr
 
 
 class TechnicianCreate(CustomBaseModel):
-    name: str
-    email: str | None = None
-    phone: str | None = None
-    specialty: str | None = None
+    name: NameStr
+    email: EmailStr | None = None
+    phone: PhoneStr | None = None
+    specialty: ShortStr | None = None
     is_active: bool = True
 
 
 class TechnicianUpdate(CustomBaseModel):
-    name: str | None = None
-    email: str | None = None
-    phone: str | None = None
-    specialty: str | None = None
+    name: NameStr | None = None
+    email: EmailStr | None = None
+    phone: PhoneStr | None = None
+    specialty: ShortStr | None = None
     is_active: bool | None = None
 
 

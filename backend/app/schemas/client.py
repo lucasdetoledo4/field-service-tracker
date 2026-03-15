@@ -1,21 +1,23 @@
 import uuid
 from datetime import datetime
 
-from app.schemas.base import CustomBaseModel, PaginationMeta
+from pydantic import EmailStr
+
+from app.schemas.base import AddressStr, CustomBaseModel, NameStr, PaginationMeta, PhoneStr
 
 
 class ClientCreate(CustomBaseModel):
-    name: str
-    email: str | None = None
-    phone: str | None = None
-    address: str | None = None
+    name: NameStr
+    email: EmailStr | None = None
+    phone: PhoneStr | None = None
+    address: AddressStr | None = None
 
 
 class ClientUpdate(CustomBaseModel):
-    name: str | None = None
-    email: str | None = None
-    phone: str | None = None
-    address: str | None = None
+    name: NameStr | None = None
+    email: EmailStr | None = None
+    phone: PhoneStr | None = None
+    address: AddressStr | None = None
 
 
 class ClientRead(CustomBaseModel):

@@ -1,13 +1,18 @@
 import uuid
 from datetime import datetime
+from typing import Annotated
+
+from pydantic import StringConstraints
 
 from app.models.work_order import WorkOrderPriority, WorkOrderStatus
-from app.schemas.base import CustomBaseModel, PaginationMeta
+from app.schemas.base import CustomBaseModel, PaginationMeta, ShortStr
+
+_StrippedStr = Annotated[str, StringConstraints(strip_whitespace=True)]
 
 
 class WorkOrderCreate(CustomBaseModel):
-    title: str
-    description: str | None = None
+    title: ShortStr
+    description: _StrippedStr | None = None
     priority: WorkOrderPriority = WorkOrderPriority.MEDIUM
     client_id: uuid.UUID | None = None
     technician_id: uuid.UUID | None = None
@@ -15,8 +20,8 @@ class WorkOrderCreate(CustomBaseModel):
 
 
 class WorkOrderUpdate(CustomBaseModel):
-    title: str | None = None
-    description: str | None = None
+    title: ShortStr | None = None
+    description: _StrippedStr | None = None
     priority: WorkOrderPriority | None = None
     client_id: uuid.UUID | None = None
     technician_id: uuid.UUID | None = None
@@ -39,7 +44,7 @@ class WorkOrderRead(CustomBaseModel):
 
 class StatusTransitionRequest(CustomBaseModel):
     to_status: WorkOrderStatus
-    notes: str | None = None
+    notes: _StrippedStr | None = None
 
 
 class WorkOrderStatusHistoryRead(CustomBaseModel):
