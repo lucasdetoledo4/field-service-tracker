@@ -28,7 +28,7 @@ async def list_technicians(
         offset=pagination.offset,
     )
     return TechniciansResponse(
-        technicians=items,
+        technicians=[TechnicianRead.model_validate(item) for item in items],
         meta=PaginationMeta.build(
             page=pagination.page,
             page_size=pagination.page_size,

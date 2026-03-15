@@ -37,7 +37,7 @@ async def list_work_orders(
         offset=pagination.offset,
     )
     return WorkOrdersResponse(
-        work_orders=items,
+        work_orders=[WorkOrderRead.model_validate(item) for item in items],
         meta=PaginationMeta.build(
             page=pagination.page,
             page_size=pagination.page_size,
