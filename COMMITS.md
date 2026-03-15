@@ -50,7 +50,8 @@ Use the area of the codebase affected:
 ## Rules
 
 1. **Body is mandatory.** One-liner commits are not allowed. Describe the motivation and context.
-2. **Total length > 200 characters.** The combined header + body must exceed 200 characters. This ensures enough context is captured for future readers.
+2. **Body max 2 lines.** Keep the body concise — two lines maximum.
+3. **Total length > 200 characters.** The combined header + body must exceed 200 characters. This ensures enough context is captured for future readers.
 3. **One logical change per commit.** Do not bundle unrelated changes.
 4. **Present tense, imperative mood** in the summary: "add endpoint" not "added endpoint" or "adds endpoint".
 5. **No vague messages** like "fix stuff", "WIP", "changes", "update". Be specific.

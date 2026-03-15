@@ -35,7 +35,7 @@ npm install && npm run dev
 
 ## 4. Pre-Commit Checklist (ALWAYS run before committing)
 
-1. Read `COMMITS.md` — verify message format, type, scope, body length >200 chars, no AI attribution
+1. Read `COMMITS.md` — verify message format, type, scope, body max 2 lines, total length >200 chars, no AI attribution
 2. Confirm only files related to the single logical change are staged
 3. For backend changes: run `uv run pytest` and confirm all tests pass
 4. For frontend changes: run `npm run build` and confirm no TypeScript errors
