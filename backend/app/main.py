@@ -3,6 +3,7 @@ import uuid
 
 import sentry_sdk
 from fastapi import APIRouter, FastAPI
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse, JSONResponse, Response
@@ -13,6 +14,7 @@ from sentry_sdk.integrations.starlette import StarletteIntegration
 from app.config import settings
 from app.constants import API_PREFIX
 from app.exceptions import AppError, InvalidTransitionError, NotFoundError
+from app.schemas.errors import ErrorResponse, FieldError
 from app.logging import configure_logging
 from app.routers.clients import router as clients_router
 from app.routers.health import router as health_router
@@ -89,6 +91,19 @@ async def scalar_ui() -> HTMLResponse:
   <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
 </body>
 </html>""")
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_error_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
+    errors = [
+        FieldError(
+            field=".".join(str(loc) for loc in err["loc"]),
+            message=err["msg"],
+        )
+        for err in exc.errors()
+    ]
+    body = ErrorResponse(detail="Validation failed", errors=errors)
+    return JSONResponse(status_code=422, content=body.model_dump())
 
 
 @app.exception_handler(NotFoundError)
