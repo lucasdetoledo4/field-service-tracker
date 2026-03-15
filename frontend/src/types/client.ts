@@ -1,3 +1,25 @@
+export interface PaginationMeta {
+  page: number
+  page_size: number
+  total: number
+  total_pages: number
+  from: number
+  to: number
+}
+
+export interface ClientFilters {
+  search?: string
+  sort_by?: string
+  sort_dir?: 'asc' | 'desc'
+  page?: number
+  page_size?: number
+}
+
+export interface ClientsResponse {
+  clients: Client[]
+  meta: PaginationMeta
+}
+
 export interface Client {
   id: string
   name: string

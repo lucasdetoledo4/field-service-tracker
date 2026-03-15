@@ -58,4 +58,14 @@ export interface WorkOrderFilters {
   priority?: WorkOrderPriority
   technician_id?: string
   client_id?: string
+  search?: string
+  sort_by?: string
+  sort_dir?: 'asc' | 'desc'
+  page?: number
+  page_size?: number
+}
+
+export interface WorkOrdersResponse {
+  work_orders: WorkOrder[]
+  meta: import('./client').PaginationMeta
 }

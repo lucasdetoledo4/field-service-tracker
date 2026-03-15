@@ -1,11 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiFetch } from '../api'
-import type { Technician, TechnicianCreate, TechnicianUpdate } from '../../types/technician'
+import type { Technician, TechnicianCreate, TechnicianUpdate, TechnicianFilters, TechniciansResponse } from '../../types/technician'
 
-export function useTechnicians() {
+export function useTechnicians(filters?: TechnicianFilters) {
+  const params = new URLSearchParams()
+  if (filters?.search) params.set('search', filters.search)
+  if (filters?.is_active !== undefined) params.set('is_active', String(filters.is_active))
+  if (filters?.sort_by) params.set('sort_by', filters.sort_by)
+  if (filters?.sort_dir) params.set('sort_dir', filters.sort_dir)
+  if (filters?.page) params.set('page', String(filters.page))
+  if (filters?.page_size) params.set('page_size', String(filters.page_size))
+  const qs = params.toString()
+
   return useQuery({
-    queryKey: ['technicians'],
-    queryFn: () => apiFetch<Technician[]>('/api/v1/technicians'),
+    queryKey: ['technicians', filters ?? {}],
+    queryFn: () => apiFetch<TechniciansResponse>(`/api/v1/technicians${qs ? `?${qs}` : ''}`),
   })
 }
 

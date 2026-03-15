@@ -5,6 +5,7 @@ import type {
   WorkOrderCreate,
   WorkOrderUpdate,
   WorkOrderFilters,
+  WorkOrdersResponse,
   StatusTransitionRequest,
   WorkOrderStatusHistory,
 } from '../../types/work-order'
@@ -15,11 +16,16 @@ export function useWorkOrders(filters?: WorkOrderFilters) {
   if (filters?.priority) params.set('priority', filters.priority)
   if (filters?.technician_id) params.set('technician_id', filters.technician_id)
   if (filters?.client_id) params.set('client_id', filters.client_id)
+  if (filters?.search) params.set('search', filters.search)
+  if (filters?.sort_by) params.set('sort_by', filters.sort_by)
+  if (filters?.sort_dir) params.set('sort_dir', filters.sort_dir)
+  if (filters?.page) params.set('page', String(filters.page))
+  if (filters?.page_size) params.set('page_size', String(filters.page_size))
   const qs = params.toString()
 
   return useQuery({
     queryKey: ['work-orders', filters ?? {}],
-    queryFn: () => apiFetch<WorkOrder[]>(`/api/v1/work-orders${qs ? `?${qs}` : ''}`),
+    queryFn: () => apiFetch<WorkOrdersResponse>(`/api/v1/work-orders${qs ? `?${qs}` : ''}`),
   })
 }
 

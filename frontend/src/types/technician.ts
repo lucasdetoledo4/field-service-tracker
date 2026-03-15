@@ -1,3 +1,19 @@
+import type { PaginationMeta } from './client'
+
+export interface TechnicianFilters {
+  search?: string
+  is_active?: boolean
+  sort_by?: string
+  sort_dir?: 'asc' | 'desc'
+  page?: number
+  page_size?: number
+}
+
+export interface TechniciansResponse {
+  technicians: Technician[]
+  meta: PaginationMeta
+}
+
 export interface Technician {
   id: string
   name: string
