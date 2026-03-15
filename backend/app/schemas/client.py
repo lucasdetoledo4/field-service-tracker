@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from enum import StrEnum
+from enum import StrEnum, auto
 
 from pydantic import EmailStr
 
@@ -8,8 +8,8 @@ from app.schemas.base import AddressStr, CustomBaseModel, NameStr, PaginationMet
 
 
 class ClientSortBy(StrEnum):
-    name = "name"
-    created_at = "created_at"
+    NAME = auto()
+    CREATED_AT = auto()
 
 
 class ClientCreate(CustomBaseModel):

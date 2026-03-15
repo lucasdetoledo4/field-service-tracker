@@ -21,8 +21,8 @@ async def list_technicians(
     service: TechnicianServiceDep,
     search: str | None = None,
     is_active: bool | None = None,
-    sort_by: TechnicianSortBy = TechnicianSortBy.created_at,
-    sort_dir: SortDir = SortDir.desc,
+    sort_by: TechnicianSortBy = TechnicianSortBy.CREATED_AT,
+    sort_dir: SortDir = SortDir.DESC,
 ) -> TechniciansResponse:
     items, total = await service.list_technicians(
         search=search,

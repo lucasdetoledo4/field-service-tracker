@@ -13,8 +13,8 @@ async def health() -> JSONResponse:
     try:
         async with async_session_maker() as session:
             await session.execute(text("SELECT 1"))
-        body = HealthRead(status=HealthStatus.ok, db=ComponentStatus.ok)
+        body = HealthRead(status=HealthStatus.OK, db=ComponentStatus.OK)
         return JSONResponse(body.model_dump(), status_code=200)
     except Exception:
-        body = HealthRead(status=HealthStatus.degraded, db=ComponentStatus.unreachable)
+        body = HealthRead(status=HealthStatus.DEGRADED, db=ComponentStatus.UNREACHABLE)
         return JSONResponse(body.model_dump(), status_code=503)

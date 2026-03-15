@@ -16,8 +16,8 @@ class TechnicianRepository:
         self,
         search: str | None = None,
         is_active: bool | None = None,
-        sort_by: TechnicianSortBy = TechnicianSortBy.created_at,
-        sort_dir: SortDir = SortDir.desc,
+        sort_by: TechnicianSortBy = TechnicianSortBy.CREATED_AT,
+        sort_dir: SortDir = SortDir.DESC,
         limit: int = 20,
         offset: int = 0,
     ) -> tuple[list[Technician], int]:
@@ -35,7 +35,7 @@ class TechnicianRepository:
         ).scalar_one()
 
         col = getattr(Technician, sort_by)
-        order_col = col.asc() if sort_dir == SortDir.asc else col.desc()
+        order_col = col.asc() if sort_dir == SortDir.ASC else col.desc()
         items = list(
             (
                 await self.db.execute(

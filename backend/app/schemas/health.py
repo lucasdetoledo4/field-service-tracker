@@ -1,16 +1,16 @@
-from enum import StrEnum
+from enum import StrEnum, auto
 
 from app.schemas.base import CustomBaseModel
 
 
 class HealthStatus(StrEnum):
-    ok = "ok"
-    degraded = "degraded"
+    OK = auto()
+    DEGRADED = auto()
 
 
 class ComponentStatus(StrEnum):
-    ok = "ok"
-    unreachable = "unreachable"
+    OK = auto()
+    UNREACHABLE = auto()
 
 
 class HealthRead(CustomBaseModel):

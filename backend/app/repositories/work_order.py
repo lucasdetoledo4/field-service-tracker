@@ -24,8 +24,8 @@ class WorkOrderRepository:
         technician_id: uuid.UUID | None = None,
         client_id: uuid.UUID | None = None,
         priority: WorkOrderPriority | None = None,
-        sort_by: WorkOrderSortBy = WorkOrderSortBy.created_at,
-        sort_dir: SortDir = SortDir.desc,
+        sort_by: WorkOrderSortBy = WorkOrderSortBy.CREATED_AT,
+        sort_dir: SortDir = SortDir.DESC,
         limit: int = 20,
         offset: int = 0,
     ) -> tuple[list[WorkOrder], int]:
@@ -46,7 +46,7 @@ class WorkOrderRepository:
         ).scalar_one()
 
         col = getattr(WorkOrder, sort_by)
-        order_col = col.asc() if sort_dir == SortDir.asc else col.desc()
+        order_col = col.asc() if sort_dir == SortDir.ASC else col.desc()
         items = list(
             (
                 await self.db.execute(

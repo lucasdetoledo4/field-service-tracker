@@ -14,8 +14,8 @@ class ClientService:
     async def list_clients(
         self,
         search: str | None = None,
-        sort_by: ClientSortBy = ClientSortBy.created_at,
-        sort_dir: SortDir = SortDir.desc,
+        sort_by: ClientSortBy = ClientSortBy.CREATED_AT,
+        sort_dir: SortDir = SortDir.DESC,
         limit: int = 20,
         offset: int = 0,
     ) -> tuple[list[Client], int]:

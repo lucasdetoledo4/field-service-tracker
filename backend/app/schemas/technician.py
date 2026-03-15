@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from enum import StrEnum
+from enum import StrEnum, auto
 
 from pydantic import EmailStr
 
@@ -8,9 +8,9 @@ from app.schemas.base import CustomBaseModel, NameStr, PaginationMeta, PhoneStr,
 
 
 class TechnicianSortBy(StrEnum):
-    name = "name"
-    created_at = "created_at"
-    is_active = "is_active"
+    NAME = auto()
+    CREATED_AT = auto()
+    IS_ACTIVE = auto()
 
 
 class TechnicianCreate(CustomBaseModel):

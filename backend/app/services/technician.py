@@ -15,8 +15,8 @@ class TechnicianService:
         self,
         search: str | None = None,
         is_active: bool | None = None,
-        sort_by: TechnicianSortBy = TechnicianSortBy.created_at,
-        sort_dir: SortDir = SortDir.desc,
+        sort_by: TechnicianSortBy = TechnicianSortBy.CREATED_AT,
+        sort_dir: SortDir = SortDir.DESC,
         limit: int = 20,
         offset: int = 0,
     ) -> tuple[list[Technician], int]:

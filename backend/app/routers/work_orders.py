@@ -27,8 +27,8 @@ async def list_work_orders(
     technician_id: uuid.UUID | None = None,
     client_id: uuid.UUID | None = None,
     priority: WorkOrderPriority | None = None,
-    sort_by: WorkOrderSortBy = WorkOrderSortBy.created_at,
-    sort_dir: SortDir = SortDir.desc,
+    sort_by: WorkOrderSortBy = WorkOrderSortBy.CREATED_AT,
+    sort_dir: SortDir = SortDir.DESC,
 ) -> WorkOrdersResponse:
     items, total = await service.list_work_orders(
         search=search,

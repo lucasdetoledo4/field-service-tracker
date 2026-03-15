@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from enum import StrEnum
+from enum import StrEnum, auto
 from typing import Annotated
 
 from pydantic import StringConstraints
@@ -10,10 +10,10 @@ from app.schemas.base import CustomBaseModel, PaginationMeta, ShortStr
 
 
 class WorkOrderSortBy(StrEnum):
-    title = "title"
-    created_at = "created_at"
-    scheduled_at = "scheduled_at"
-    priority = "priority"
+    TITLE = auto()
+    CREATED_AT = auto()
+    SCHEDULED_AT = auto()
+    PRIORITY = auto()
 
 _StrippedStr = Annotated[str, StringConstraints(strip_whitespace=True)]
 
