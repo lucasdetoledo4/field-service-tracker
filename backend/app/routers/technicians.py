@@ -34,7 +34,7 @@ async def list_technicians(
     )
     return TechniciansResponse(
         technicians=[TechnicianRead.model_validate(item) for item in items],
-        meta=PaginationMeta.build(
+        meta=PaginationMeta(
             page=pagination.page,
             page_size=pagination.page_size,
             total=total,

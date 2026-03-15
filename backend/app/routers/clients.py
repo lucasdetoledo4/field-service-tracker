@@ -32,7 +32,7 @@ async def list_clients(
     )
     return ClientsResponse(
         clients=[ClientRead.model_validate(item) for item in items],
-        meta=PaginationMeta.build(
+        meta=PaginationMeta(
             page=pagination.page,
             page_size=pagination.page_size,
             total=total,
