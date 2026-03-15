@@ -1,8 +1,8 @@
 import uuid
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, status
 
-from app.dependencies import PaginationParams, get_work_order_service
+from app.dependencies import PaginationDep, WorkOrderServiceDep
 from app.models.work_order import WorkOrderPriority, WorkOrderStatus
 from app.schemas.base import PaginationMeta
 from app.schemas.work_order import (
@@ -13,20 +13,19 @@ from app.schemas.work_order import (
     WorkOrderUpdate,
     WorkOrdersResponse,
 )
-from app.services.work_order import WorkOrderService
 
 router = APIRouter(prefix="/work-orders", tags=["work-orders"])
 
 
 @router.get("")
 async def list_work_orders(
+    pagination: PaginationDep,
+    service: WorkOrderServiceDep,
     search: str | None = None,
     status: WorkOrderStatus | None = None,
     technician_id: uuid.UUID | None = None,
     client_id: uuid.UUID | None = None,
     priority: WorkOrderPriority | None = None,
-    pagination: PaginationParams = Depends(PaginationParams),
-    service: WorkOrderService = Depends(get_work_order_service),
 ) -> WorkOrdersResponse:
     items, total = await service.list_work_orders(
         search=search,
@@ -50,8 +49,8 @@ async def list_work_orders(
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def create_work_order(
+    service: WorkOrderServiceDep,
     data: WorkOrderCreate,
-    service: WorkOrderService = Depends(get_work_order_service),
 ) -> WorkOrderRead:
     return await service.create_work_order(data)
 
@@ -59,7 +58,7 @@ async def create_work_order(
 @router.get("/{work_order_id}")
 async def get_work_order(
     work_order_id: uuid.UUID,
-    service: WorkOrderService = Depends(get_work_order_service),
+    service: WorkOrderServiceDep,
 ) -> WorkOrderRead:
     return await service.get_work_order(work_order_id)
 
@@ -67,8 +66,8 @@ async def get_work_order(
 @router.patch("/{work_order_id}")
 async def update_work_order(
     work_order_id: uuid.UUID,
+    service: WorkOrderServiceDep,
     data: WorkOrderUpdate,
-    service: WorkOrderService = Depends(get_work_order_service),
 ) -> WorkOrderRead:
     return await service.update_work_order(work_order_id, data)
 
@@ -76,7 +75,7 @@ async def update_work_order(
 @router.delete("/{work_order_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_work_order(
     work_order_id: uuid.UUID,
-    service: WorkOrderService = Depends(get_work_order_service),
+    service: WorkOrderServiceDep,
 ) -> None:
     await service.delete_work_order(work_order_id)
 
@@ -84,8 +83,8 @@ async def delete_work_order(
 @router.post("/{work_order_id}/transition")
 async def transition_work_order_status(
     work_order_id: uuid.UUID,
+    service: WorkOrderServiceDep,
     data: StatusTransitionRequest,
-    service: WorkOrderService = Depends(get_work_order_service),
 ) -> WorkOrderRead:
     return await service.transition_status(work_order_id, data.to_status, data.notes)
 
@@ -93,6 +92,6 @@ async def transition_work_order_status(
 @router.get("/{work_order_id}/history")
 async def get_work_order_history(
     work_order_id: uuid.UUID,
-    service: WorkOrderService = Depends(get_work_order_service),
+    service: WorkOrderServiceDep,
 ) -> list[WorkOrderStatusHistoryRead]:
     return await service.get_work_order_history(work_order_id)

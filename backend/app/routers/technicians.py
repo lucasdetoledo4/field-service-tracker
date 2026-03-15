@@ -1,8 +1,8 @@
 import uuid
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, status
 
-from app.dependencies import PaginationParams, get_technician_service
+from app.dependencies import PaginationDep, TechnicianServiceDep
 from app.schemas.base import PaginationMeta
 from app.schemas.technician import (
     TechnicianCreate,
@@ -10,17 +10,16 @@ from app.schemas.technician import (
     TechnicianUpdate,
     TechniciansResponse,
 )
-from app.services.technician import TechnicianService
 
 router = APIRouter(prefix="/technicians", tags=["technicians"])
 
 
 @router.get("")
 async def list_technicians(
+    pagination: PaginationDep,
+    service: TechnicianServiceDep,
     search: str | None = None,
     is_active: bool | None = None,
-    pagination: PaginationParams = Depends(PaginationParams),
-    service: TechnicianService = Depends(get_technician_service),
 ) -> TechniciansResponse:
     items, total = await service.list_technicians(
         search=search,
@@ -41,8 +40,8 @@ async def list_technicians(
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def create_technician(
+    service: TechnicianServiceDep,
     data: TechnicianCreate,
-    service: TechnicianService = Depends(get_technician_service),
 ) -> TechnicianRead:
     return await service.create_technician(data)
 
@@ -50,7 +49,7 @@ async def create_technician(
 @router.get("/{technician_id}")
 async def get_technician(
     technician_id: uuid.UUID,
-    service: TechnicianService = Depends(get_technician_service),
+    service: TechnicianServiceDep,
 ) -> TechnicianRead:
     return await service.get_technician(technician_id)
 
@@ -58,8 +57,8 @@ async def get_technician(
 @router.patch("/{technician_id}")
 async def update_technician(
     technician_id: uuid.UUID,
+    service: TechnicianServiceDep,
     data: TechnicianUpdate,
-    service: TechnicianService = Depends(get_technician_service),
 ) -> TechnicianRead:
     return await service.update_technician(technician_id, data)
 
@@ -67,6 +66,6 @@ async def update_technician(
 @router.delete("/{technician_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_technician(
     technician_id: uuid.UUID,
-    service: TechnicianService = Depends(get_technician_service),
+    service: TechnicianServiceDep,
 ) -> None:
     await service.delete_technician(technician_id)

@@ -1,20 +1,19 @@
 import uuid
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, status
 
-from app.dependencies import PaginationParams, get_client_service
+from app.dependencies import ClientServiceDep, PaginationDep
 from app.schemas.base import PaginationMeta
 from app.schemas.client import ClientCreate, ClientRead, ClientUpdate, ClientsResponse
-from app.services.client import ClientService
 
 router = APIRouter(prefix="/clients", tags=["clients"])
 
 
 @router.get("")
 async def list_clients(
+    pagination: PaginationDep,
+    service: ClientServiceDep,
     search: str | None = None,
-    pagination: PaginationParams = Depends(PaginationParams),
-    service: ClientService = Depends(get_client_service),
 ) -> ClientsResponse:
     items, total = await service.list_clients(
         search=search,
@@ -34,8 +33,8 @@ async def list_clients(
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def create_client(
+    service: ClientServiceDep,
     data: ClientCreate,
-    service: ClientService = Depends(get_client_service),
 ) -> ClientRead:
     return await service.create_client(data)
 
@@ -43,7 +42,7 @@ async def create_client(
 @router.get("/{client_id}")
 async def get_client(
     client_id: uuid.UUID,
-    service: ClientService = Depends(get_client_service),
+    service: ClientServiceDep,
 ) -> ClientRead:
     return await service.get_client(client_id)
 
@@ -51,8 +50,8 @@ async def get_client(
 @router.patch("/{client_id}")
 async def update_client(
     client_id: uuid.UUID,
+    service: ClientServiceDep,
     data: ClientUpdate,
-    service: ClientService = Depends(get_client_service),
 ) -> ClientRead:
     return await service.update_client(client_id, data)
 
@@ -60,6 +59,6 @@ async def update_client(
 @router.delete("/{client_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_client(
     client_id: uuid.UUID,
-    service: ClientService = Depends(get_client_service),
+    service: ClientServiceDep,
 ) -> None:
     await service.delete_client(client_id)

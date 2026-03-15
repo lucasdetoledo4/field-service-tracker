@@ -1,9 +1,16 @@
 from dataclasses import dataclass
+from typing import Annotated
 
 from fastapi import Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
+from app.repositories.client import ClientRepository
+from app.repositories.technician import TechnicianRepository
+from app.repositories.work_order import WorkOrderRepository
+from app.services.client import ClientService
+from app.services.technician import TechnicianService
+from app.services.work_order import WorkOrderService
 
 
 @dataclass
@@ -18,12 +25,6 @@ class PaginationParams:
     @property
     def offset(self) -> int:
         return (self.page - 1) * self.page_size
-from app.repositories.client import ClientRepository
-from app.repositories.technician import TechnicianRepository
-from app.repositories.work_order import WorkOrderRepository
-from app.services.client import ClientService
-from app.services.technician import TechnicianService
-from app.services.work_order import WorkOrderService
 
 
 def get_client_repo(db: AsyncSession = Depends(get_db)) -> ClientRepository:
@@ -52,3 +53,14 @@ def get_work_order_service(
     repo: WorkOrderRepository = Depends(get_work_order_repo),
 ) -> WorkOrderService:
     return WorkOrderService(repo)
+
+
+# ---------------------------------------------------------------------------
+# Reusable dependency type aliases — import these in routers instead of
+# repeating Depends(...) at every call site.
+# ---------------------------------------------------------------------------
+
+PaginationDep = Annotated[PaginationParams, Depends(PaginationParams)]
+ClientServiceDep = Annotated[ClientService, Depends(get_client_service)]
+TechnicianServiceDep = Annotated[TechnicianService, Depends(get_technician_service)]
+WorkOrderServiceDep = Annotated[WorkOrderService, Depends(get_work_order_service)]
