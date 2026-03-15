@@ -1,17 +1,25 @@
+import time
+import uuid
+
 import sentry_sdk
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.requests import Request
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, Response
+from loguru import logger
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.starlette import StarletteIntegration
+
 from app.config import settings
 from app.constants import API_PREFIX
 from app.exceptions import AppError, InvalidTransitionError, NotFoundError
+from app.logging import configure_logging
 from app.routers.clients import router as clients_router
 from app.routers.health import router as health_router
 from app.routers.technicians import router as technicians_router
 from app.routers.work_orders import router as work_orders_router
+
+configure_logging()
 
 if settings.SENTRY_DSN:
     _ = sentry_sdk.init(
@@ -43,6 +51,24 @@ api_router.include_router(technicians_router)
 api_router.include_router(work_orders_router)
 app.include_router(api_router)
 app.include_router(health_router)
+
+
+@app.middleware("http")
+async def request_logging_middleware(request: Request, call_next: object) -> Response:
+    request_id = request.headers.get("X-Request-ID", str(uuid.uuid4()))
+    start = time.perf_counter()
+    response: Response = await call_next(request)  # type: ignore[operator]
+    duration_ms = round((time.perf_counter() - start) * 1000, 2)
+    logger.info(
+        "request",
+        method=request.method,
+        path=request.url.path,
+        status_code=response.status_code,
+        duration_ms=duration_ms,
+        request_id=request_id,
+    )
+    response.headers["X-Request-ID"] = request_id
+    return response
 
 
 @app.get("/scalar", include_in_schema=False)
