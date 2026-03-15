@@ -7,7 +7,7 @@ All commit messages in this repository must follow the conventions below. These 
 ## Format
 
 ```
-<type>(<scope>): <short summary>
+<type> (<scope>): <short summary>
 
 <body — required, must bring the total message length above 200 characters>
 
@@ -61,7 +61,7 @@ Use the area of the codebase affected:
 ## Examples
 
 ```
-feat(api): add paginated list endpoint for service requests
+feat (api): add paginated list endpoint for service requests
 
 Implements GET /api/v1/service-requests with support for status, priority,
 technician_id, and search filters. Pagination is handled via page/page_size
@@ -70,7 +70,7 @@ consistent across filter changes.
 ```
 
 ```
-chore(backend): set up uv project with FastAPI and async dependencies
+chore (backend): set up uv project with FastAPI and async dependencies
 
 Initializes pyproject.toml using uv as the package manager. Pins FastAPI,
 uvicorn, SQLAlchemy 2.x async, asyncpg, alembic, pydantic v2, and
@@ -79,7 +79,7 @@ for async test coverage.
 ```
 
 ```
-fix(service): enforce status transition rules in service layer
+fix (service): enforce status transition rules in service layer
 
 Previously the status field could be set to any value via PATCH. Now all
 status changes must go through the transition validator which raises
@@ -88,7 +88,7 @@ in the allowed set (e.g. COMPLETED → IN_PROGRESS).
 ```
 
 ```
-refactor(schema): split technician and service_request schemas into own files
+refactor (schema): split technician and service_request schemas into own files
 
 Moved all Pydantic v2 schemas out of a single schemas.py into per-resource
 files under app/schemas/. This matches the models/ and routers/ layout and
