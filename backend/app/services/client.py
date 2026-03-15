@@ -10,8 +10,13 @@ class ClientService:
     def __init__(self, repo: ClientRepository) -> None:
         self.repo = repo
 
-    async def list_clients(self) -> list[Client]:
-        return await self.repo.get_all()
+    async def list_clients(
+        self,
+        search: str | None = None,
+        limit: int = 20,
+        offset: int = 0,
+    ) -> tuple[list[Client], int]:
+        return await self.repo.get_all(search=search, limit=limit, offset=offset)
 
     async def get_client(self, client_id: uuid.UUID) -> Client:
         client = await self.repo.get_by_id(client_id)

@@ -1,4 +1,3 @@
-import pytest
 from httpx import AsyncClient
 
 from app.constants import API_PREFIX
@@ -24,7 +23,30 @@ async def test_list_technicians(client: AsyncClient):
     await client.post(TECHNICIANS, json={"name": "Tech B"})
     response = await client.get(TECHNICIANS)
     assert response.status_code == 200
-    assert len(response.json()) == 2
+    data = response.json()
+    assert data["meta"]["total"] == 2
+    assert len(data["technicians"]) == 2
+    assert data["meta"]["page"] == 1
+
+
+async def test_list_technicians_filter_active(client: AsyncClient):
+    await client.post(TECHNICIANS, json={"name": "Active Tech", "is_active": True})
+    await client.post(TECHNICIANS, json={"name": "Inactive Tech", "is_active": False})
+    response = await client.get(TECHNICIANS, params={"is_active": "true"})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["meta"]["total"] == 1
+    assert data["technicians"][0]["name"] == "Active Tech"
+
+
+async def test_list_technicians_search(client: AsyncClient):
+    await client.post(TECHNICIANS, json={"name": "Jane Doe", "email": "jane@example.com"})
+    await client.post(TECHNICIANS, json={"name": "John Smith"})
+    response = await client.get(TECHNICIANS, params={"search": "jane"})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["meta"]["total"] == 1
+    assert data["technicians"][0]["name"] == "Jane Doe"
 
 
 async def test_get_technician(client: AsyncClient):

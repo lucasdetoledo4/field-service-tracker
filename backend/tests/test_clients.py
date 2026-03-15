@@ -1,4 +1,3 @@
-import pytest
 from httpx import AsyncClient
 
 from app.constants import API_PREFIX
@@ -20,7 +19,31 @@ async def test_list_clients(client: AsyncClient):
     await client.post(CLIENTS, json={"name": "Client B"})
     response = await client.get(CLIENTS)
     assert response.status_code == 200
-    assert len(response.json()) == 2
+    data = response.json()
+    assert data["meta"]["total"] == 2
+    assert len(data["clients"]) == 2
+    assert data["meta"]["page"] == 1
+
+
+async def test_list_clients_search(client: AsyncClient):
+    await client.post(CLIENTS, json={"name": "Acme Corp", "email": "acme@example.com"})
+    await client.post(CLIENTS, json={"name": "Beta LLC"})
+    response = await client.get(CLIENTS, params={"search": "acme"})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["meta"]["total"] == 1
+    assert data["clients"][0]["name"] == "Acme Corp"
+
+
+async def test_list_clients_pagination(client: AsyncClient):
+    for i in range(5):
+        await client.post(CLIENTS, json={"name": f"Client {i}"})
+    response = await client.get(CLIENTS, params={"page": 1, "page_size": 3})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["meta"]["total"] == 5
+    assert len(data["clients"]) == 3
+    assert data["meta"]["total_pages"] == 2
 
 
 async def test_get_client(client: AsyncClient):

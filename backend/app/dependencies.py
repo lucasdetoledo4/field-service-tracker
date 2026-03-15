@@ -1,7 +1,23 @@
-from fastapi import Depends
+from dataclasses import dataclass
+
+from fastapi import Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
+
+
+@dataclass
+class PaginationParams:
+    page: int = Query(default=1, ge=1, description="Page number (1-based)")
+    page_size: int = Query(default=20, ge=1, le=100, description="Items per page")
+
+    @property
+    def limit(self) -> int:
+        return self.page_size
+
+    @property
+    def offset(self) -> int:
+        return (self.page - 1) * self.page_size
 from app.repositories.client import ClientRepository
 from app.repositories.technician import TechnicianRepository
 from app.repositories.work_order import WorkOrderRepository

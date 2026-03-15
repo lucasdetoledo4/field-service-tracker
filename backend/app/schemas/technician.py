@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from app.schemas.base import CustomBaseModel
+from app.schemas.base import CustomBaseModel, PaginationMeta
 
 
 class TechnicianCreate(CustomBaseModel):
@@ -29,3 +29,8 @@ class TechnicianRead(CustomBaseModel):
     is_active: bool
     created_at: datetime
     updated_at: datetime
+
+
+class TechniciansResponse(CustomBaseModel):
+    technicians: list[TechnicianRead]
+    meta: PaginationMeta

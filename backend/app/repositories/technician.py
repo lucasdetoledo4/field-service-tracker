@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.technician import Technician
@@ -11,9 +11,36 @@ class TechnicianRepository:
     def __init__(self, db: AsyncSession) -> None:
         self.db = db
 
-    async def get_all(self) -> list[Technician]:
-        result = await self.db.execute(select(Technician))
-        return list(result.scalars().all())
+    async def get_all(
+        self,
+        search: str | None = None,
+        is_active: bool | None = None,
+        limit: int = 20,
+        offset: int = 0,
+    ) -> tuple[list[Technician], int]:
+        stmt = select(Technician)
+        if search:
+            pattern = f"%{search}%"
+            stmt = stmt.where(
+                or_(Technician.name.ilike(pattern), Technician.email.ilike(pattern))
+            )
+        if is_active is not None:
+            stmt = stmt.where(Technician.is_active == is_active)
+
+        total = (
+            await self.db.execute(select(func.count()).select_from(stmt.subquery()))
+        ).scalar_one()
+
+        items = list(
+            (
+                await self.db.execute(
+                    stmt.order_by(Technician.created_at.desc()).limit(limit).offset(offset)
+                )
+            )
+            .scalars()
+            .all()
+        )
+        return items, total
 
     async def get_by_id(self, id: uuid.UUID) -> Technician | None:
         result = await self.db.execute(select(Technician).where(Technician.id == id))

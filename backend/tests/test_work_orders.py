@@ -1,4 +1,3 @@
-import pytest
 from httpx import AsyncClient
 
 from app.constants import API_PREFIX
@@ -23,7 +22,41 @@ async def test_list_work_orders(client: AsyncClient):
     await client.post(WORK_ORDERS, json={"title": "WO 2"})
     response = await client.get(WORK_ORDERS)
     assert response.status_code == 200
-    assert len(response.json()) == 2
+    data = response.json()
+    assert data["meta"]["total"] == 2
+    assert len(data["work_orders"]) == 2
+    assert data["meta"]["page"] == 1
+
+
+async def test_list_work_orders_filter_status(client: AsyncClient):
+    await client.post(WORK_ORDERS, json={"title": "Pending WO"})
+    response = await client.get(WORK_ORDERS, params={"status": "pending"})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["meta"]["total"] == 1
+    assert data["work_orders"][0]["status"] == "pending"
+
+
+async def test_list_work_orders_search(client: AsyncClient):
+    await client.post(WORK_ORDERS, json={"title": "Fix HVAC unit"})
+    await client.post(WORK_ORDERS, json={"title": "Replace boiler"})
+    response = await client.get(WORK_ORDERS, params={"search": "hvac"})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["meta"]["total"] == 1
+    assert data["work_orders"][0]["title"] == "Fix HVAC unit"
+
+
+async def test_list_work_orders_pagination(client: AsyncClient):
+    for i in range(5):
+        await client.post(WORK_ORDERS, json={"title": f"WO {i}"})
+    response = await client.get(WORK_ORDERS, params={"page": 2, "page_size": 2})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["meta"]["total"] == 5
+    assert len(data["work_orders"]) == 2
+    assert data["meta"]["page"] == 2
+    assert data["meta"]["total_pages"] == 3
 
 
 async def test_get_work_order(client: AsyncClient):

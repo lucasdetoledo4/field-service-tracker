@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.work_order import (
@@ -18,22 +18,40 @@ class WorkOrderRepository:
 
     async def get_all(
         self,
+        search: str | None = None,
         status: WorkOrderStatus | None = None,
         technician_id: uuid.UUID | None = None,
         client_id: uuid.UUID | None = None,
         priority: WorkOrderPriority | None = None,
-    ) -> list[WorkOrder]:
-        query = select(WorkOrder)
+        limit: int = 20,
+        offset: int = 0,
+    ) -> tuple[list[WorkOrder], int]:
+        stmt = select(WorkOrder)
+        if search:
+            stmt = stmt.where(WorkOrder.title.ilike(f"%{search}%"))
         if status is not None:
-            query = query.where(WorkOrder.status == status.value)
+            stmt = stmt.where(WorkOrder.status == status.value)
         if technician_id is not None:
-            query = query.where(WorkOrder.technician_id == technician_id)
+            stmt = stmt.where(WorkOrder.technician_id == technician_id)
         if client_id is not None:
-            query = query.where(WorkOrder.client_id == client_id)
+            stmt = stmt.where(WorkOrder.client_id == client_id)
         if priority is not None:
-            query = query.where(WorkOrder.priority == priority.value)
-        result = await self.db.execute(query)
-        return list(result.scalars().all())
+            stmt = stmt.where(WorkOrder.priority == priority.value)
+
+        total = (
+            await self.db.execute(select(func.count()).select_from(stmt.subquery()))
+        ).scalar_one()
+
+        items = list(
+            (
+                await self.db.execute(
+                    stmt.order_by(WorkOrder.created_at.desc()).limit(limit).offset(offset)
+                )
+            )
+            .scalars()
+            .all()
+        )
+        return items, total
 
     async def get_by_id(self, id: uuid.UUID) -> WorkOrder | None:
         result = await self.db.execute(select(WorkOrder).where(WorkOrder.id == id))

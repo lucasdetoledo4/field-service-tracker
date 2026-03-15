@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.client import Client
@@ -11,9 +11,33 @@ class ClientRepository:
     def __init__(self, db: AsyncSession) -> None:
         self.db = db
 
-    async def get_all(self) -> list[Client]:
-        result = await self.db.execute(select(Client))
-        return list(result.scalars().all())
+    async def get_all(
+        self,
+        search: str | None = None,
+        limit: int = 20,
+        offset: int = 0,
+    ) -> tuple[list[Client], int]:
+        stmt = select(Client)
+        if search:
+            pattern = f"%{search}%"
+            stmt = stmt.where(
+                or_(Client.name.ilike(pattern), Client.email.ilike(pattern))
+            )
+
+        total = (
+            await self.db.execute(select(func.count()).select_from(stmt.subquery()))
+        ).scalar_one()
+
+        items = list(
+            (
+                await self.db.execute(
+                    stmt.order_by(Client.created_at.desc()).limit(limit).offset(offset)
+                )
+            )
+            .scalars()
+            .all()
+        )
+        return items, total
 
     async def get_by_id(self, id: uuid.UUID) -> Client | None:
         result = await self.db.execute(select(Client).where(Client.id == id))

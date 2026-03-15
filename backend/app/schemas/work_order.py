@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 
 from app.models.work_order import WorkOrderPriority, WorkOrderStatus
-from app.schemas.base import CustomBaseModel
+from app.schemas.base import CustomBaseModel, PaginationMeta
 
 
 class WorkOrderCreate(CustomBaseModel):
@@ -49,3 +49,8 @@ class WorkOrderStatusHistoryRead(CustomBaseModel):
     to_status: WorkOrderStatus
     notes: str | None
     created_at: datetime
+
+
+class WorkOrdersResponse(CustomBaseModel):
+    work_orders: list[WorkOrderRead]
+    meta: PaginationMeta

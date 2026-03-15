@@ -19,16 +19,22 @@ class WorkOrderService:
 
     async def list_work_orders(
         self,
+        search: str | None = None,
         status: WorkOrderStatus | None = None,
         technician_id: uuid.UUID | None = None,
         client_id: uuid.UUID | None = None,
         priority: WorkOrderPriority | None = None,
-    ) -> list[WorkOrder]:
+        limit: int = 20,
+        offset: int = 0,
+    ) -> tuple[list[WorkOrder], int]:
         return await self.repo.get_all(
+            search=search,
             status=status,
             technician_id=technician_id,
             client_id=client_id,
             priority=priority,
+            limit=limit,
+            offset=offset,
         )
 
     async def get_work_order(self, work_order_id: uuid.UUID) -> WorkOrder:

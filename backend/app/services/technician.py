@@ -10,8 +10,16 @@ class TechnicianService:
     def __init__(self, repo: TechnicianRepository) -> None:
         self.repo = repo
 
-    async def list_technicians(self) -> list[Technician]:
-        return await self.repo.get_all()
+    async def list_technicians(
+        self,
+        search: str | None = None,
+        is_active: bool | None = None,
+        limit: int = 20,
+        offset: int = 0,
+    ) -> tuple[list[Technician], int]:
+        return await self.repo.get_all(
+            search=search, is_active=is_active, limit=limit, offset=offset
+        )
 
     async def get_technician(self, technician_id: uuid.UUID) -> Technician:
         technician = await self.repo.get_by_id(technician_id)

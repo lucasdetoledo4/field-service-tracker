@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from app.schemas.base import CustomBaseModel
+from app.schemas.base import CustomBaseModel, PaginationMeta
 
 
 class ClientCreate(CustomBaseModel):
@@ -26,3 +26,8 @@ class ClientRead(CustomBaseModel):
     address: str | None
     created_at: datetime
     updated_at: datetime
+
+
+class ClientsResponse(CustomBaseModel):
+    clients: list[ClientRead]
+    meta: PaginationMeta
