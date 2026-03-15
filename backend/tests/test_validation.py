@@ -3,6 +3,23 @@ from httpx import AsyncClient
 from app.constants import API_PREFIX
 
 CLIENTS = f"{API_PREFIX}/clients"
+
+
+# --- Pagination ---
+
+async def test_page_size_at_limit_is_accepted(client: AsyncClient):
+    response = await client.get(CLIENTS, params={"page_size": 10_000})
+    assert response.status_code == 200
+
+
+async def test_page_size_above_limit_is_rejected(client: AsyncClient):
+    response = await client.get(CLIENTS, params={"page_size": 10_001})
+    assert response.status_code == 422
+
+
+async def test_page_size_zero_is_rejected(client: AsyncClient):
+    response = await client.get(CLIENTS, params={"page_size": 0})
+    assert response.status_code == 422
 TECHNICIANS = f"{API_PREFIX}/technicians"
 WORK_ORDERS = f"{API_PREFIX}/work-orders"
 
