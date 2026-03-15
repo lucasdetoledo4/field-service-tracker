@@ -33,8 +33,10 @@ export default function WorkOrderDetailPage() {
   const navigate = useNavigate()
   const { data: wo, isLoading, isError } = useWorkOrder(id!)
   const { data: history = [] } = useWorkOrderHistory(id!)
-  const { data: clients = [] } = useClients()
-  const { data: technicians = [] } = useTechnicians()
+  const { data: clientsData } = useClients()
+  const { data: techniciansData } = useTechnicians()
+  const clients = clientsData?.clients ?? []
+  const technicians = techniciansData?.technicians ?? []
   const updateWorkOrder = useUpdateWorkOrder(id!)
   const deleteWorkOrder = useDeleteWorkOrder()
   const transitionStatus = useTransitionStatus(id!)

@@ -80,6 +80,27 @@ export default function WorkOrderForm({ defaultValues, clients, technicians, onS
 
         <Grid columns="2" gap="3">
           <label className="block">
+            <Text size="2" weight="medium" className="text-slate-700 mb-1.5 block">
+              Client <span className="text-red-500">*</span>
+            </Text>
+            <Controller
+              name="client_id"
+              control={control}
+              rules={{ validate: v => !!v || 'Client is required' }}
+              render={({ field }) => (
+                <Select.Root value={field.value ?? NONE} onValueChange={(v) => field.onChange(v === NONE ? null : v)}>
+                  <Select.Trigger placeholder="Select client…" className="w-full" />
+                  <Select.Content>
+                    <Select.Item value={NONE}>No client</Select.Item>
+                    {clients.map((c) => <Select.Item key={c.id} value={c.id}>{c.name}</Select.Item>)}
+                  </Select.Content>
+                </Select.Root>
+              )}
+            />
+            {errors.client_id && <Text size="1" className="text-red-500 mt-1 block">{errors.client_id.message}</Text>}
+          </label>
+
+          <label className="block">
             <Text size="2" weight="medium" className="text-slate-700 mb-1.5 block">Priority</Text>
             <Controller
               name="priority"
@@ -96,29 +117,19 @@ export default function WorkOrderForm({ defaultValues, clients, technicians, onS
               )}
             />
           </label>
-
-          <label className="block">
-            <Text size="2" weight="medium" className="text-slate-700 mb-1.5 block">Scheduled At</Text>
-            <TextField.Root size="2" type="datetime-local" {...register('scheduled_at')} />
-          </label>
         </Grid>
 
         <Grid columns="2" gap="3">
           <label className="block">
-            <Text size="2" weight="medium" className="text-slate-700 mb-1.5 block">Client</Text>
-            <Controller
-              name="client_id"
-              control={control}
-              render={({ field }) => (
-                <Select.Root value={field.value ?? NONE} onValueChange={(v) => field.onChange(v === NONE ? null : v)}>
-                  <Select.Trigger placeholder="Select client…" className="w-full" />
-                  <Select.Content>
-                    <Select.Item value={NONE}>No client</Select.Item>
-                    {clients.map((c) => <Select.Item key={c.id} value={c.id}>{c.name}</Select.Item>)}
-                  </Select.Content>
-                </Select.Root>
-              )}
+            <Text size="2" weight="medium" className="text-slate-700 mb-1.5 block">
+              Scheduled At <span className="text-red-500">*</span>
+            </Text>
+            <TextField.Root
+              size="2"
+              type="datetime-local"
+              {...register('scheduled_at', { required: 'Scheduled date & time is required' })}
             />
+            {errors.scheduled_at && <Text size="1" className="text-red-500 mt-1 block">{errors.scheduled_at.message}</Text>}
           </label>
 
           <label className="block">
