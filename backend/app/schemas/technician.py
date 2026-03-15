@@ -10,6 +10,7 @@ from app.schemas.base import CustomBaseModel, NameStr, PaginationMeta, PhoneStr,
 class TechnicianSortBy(StrEnum):
     name = "name"
     created_at = "created_at"
+    is_active = "is_active"
 
 
 class TechnicianCreate(CustomBaseModel):
