@@ -1,11 +1,19 @@
 import uuid
 from datetime import datetime
+from enum import StrEnum
 from typing import Annotated
 
 from pydantic import StringConstraints
 
 from app.models.work_order import WorkOrderPriority, WorkOrderStatus
 from app.schemas.base import CustomBaseModel, PaginationMeta, ShortStr
+
+
+class WorkOrderSortBy(StrEnum):
+    title = "title"
+    created_at = "created_at"
+    scheduled_at = "scheduled_at"
+    priority = "priority"
 
 _StrippedStr = Annotated[str, StringConstraints(strip_whitespace=True)]
 

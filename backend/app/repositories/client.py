@@ -4,7 +4,8 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.client import Client
-from app.schemas.client import ClientCreate, ClientUpdate
+from app.schemas.base import SortDir
+from app.schemas.client import ClientCreate, ClientSortBy, ClientUpdate
 
 
 class ClientRepository:
@@ -14,6 +15,8 @@ class ClientRepository:
     async def get_all(
         self,
         search: str | None = None,
+        sort_by: ClientSortBy = ClientSortBy.created_at,
+        sort_dir: SortDir = SortDir.desc,
         limit: int = 20,
         offset: int = 0,
     ) -> tuple[list[Client], int]:
@@ -28,10 +31,12 @@ class ClientRepository:
             await self.db.execute(select(func.count()).select_from(stmt.subquery()))
         ).scalar_one()
 
+        col = getattr(Client, sort_by)
+        order_col = col.asc() if sort_dir == SortDir.asc else col.desc()
         items = list(
             (
                 await self.db.execute(
-                    stmt.order_by(Client.created_at.desc()).limit(limit).offset(offset)
+                    stmt.order_by(order_col).limit(limit).offset(offset)
                 )
             )
             .scalars()

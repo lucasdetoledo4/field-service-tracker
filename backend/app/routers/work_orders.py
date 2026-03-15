@@ -4,14 +4,15 @@ from fastapi import APIRouter, status
 
 from app.dependencies import PaginationDep, WorkOrderServiceDep
 from app.models.work_order import WorkOrderPriority, WorkOrderStatus
-from app.schemas.base import PaginationMeta
+from app.schemas.base import PaginationMeta, SortDir
 from app.schemas.work_order import (
     StatusTransitionRequest,
     WorkOrderCreate,
     WorkOrderRead,
+    WorkOrderSortBy,
+    WorkOrdersResponse,
     WorkOrderStatusHistoryRead,
     WorkOrderUpdate,
-    WorkOrdersResponse,
 )
 
 router = APIRouter(prefix="/work-orders", tags=["work-orders"])
@@ -26,6 +27,8 @@ async def list_work_orders(
     technician_id: uuid.UUID | None = None,
     client_id: uuid.UUID | None = None,
     priority: WorkOrderPriority | None = None,
+    sort_by: WorkOrderSortBy = WorkOrderSortBy.created_at,
+    sort_dir: SortDir = SortDir.desc,
 ) -> WorkOrdersResponse:
     items, total = await service.list_work_orders(
         search=search,
@@ -33,6 +36,8 @@ async def list_work_orders(
         technician_id=technician_id,
         client_id=client_id,
         priority=priority,
+        sort_by=sort_by,
+        sort_dir=sort_dir,
         limit=pagination.limit,
         offset=pagination.offset,
     )
@@ -69,7 +74,9 @@ async def update_work_order(
     service: WorkOrderServiceDep,
     data: WorkOrderUpdate,
 ) -> WorkOrderRead:
-    return WorkOrderRead.model_validate(await service.update_work_order(work_order_id, data))
+    return WorkOrderRead.model_validate(
+        await service.update_work_order(work_order_id, data)
+    )
 
 
 @router.delete("/{work_order_id}", status_code=status.HTTP_204_NO_CONTENT)

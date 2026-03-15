@@ -10,7 +10,8 @@ from app.models.work_order import (
     WorkOrderStatusHistory,
 )
 from app.repositories.work_order import WorkOrderRepository
-from app.schemas.work_order import WorkOrderCreate, WorkOrderUpdate
+from app.schemas.base import SortDir
+from app.schemas.work_order import WorkOrderCreate, WorkOrderSortBy, WorkOrderUpdate
 
 
 class WorkOrderService:
@@ -24,6 +25,8 @@ class WorkOrderService:
         technician_id: uuid.UUID | None = None,
         client_id: uuid.UUID | None = None,
         priority: WorkOrderPriority | None = None,
+        sort_by: WorkOrderSortBy = WorkOrderSortBy.created_at,
+        sort_dir: SortDir = SortDir.desc,
         limit: int = 20,
         offset: int = 0,
     ) -> tuple[list[WorkOrder], int]:
@@ -33,6 +36,8 @@ class WorkOrderService:
             technician_id=technician_id,
             client_id=client_id,
             priority=priority,
+            sort_by=sort_by,
+            sort_dir=sort_dir,
             limit=limit,
             offset=offset,
         )

@@ -3,7 +3,8 @@ import uuid
 from app.exceptions import NotFoundError
 from app.models.technician import Technician
 from app.repositories.technician import TechnicianRepository
-from app.schemas.technician import TechnicianCreate, TechnicianUpdate
+from app.schemas.base import SortDir
+from app.schemas.technician import TechnicianCreate, TechnicianSortBy, TechnicianUpdate
 
 
 class TechnicianService:
@@ -14,11 +15,18 @@ class TechnicianService:
         self,
         search: str | None = None,
         is_active: bool | None = None,
+        sort_by: TechnicianSortBy = TechnicianSortBy.created_at,
+        sort_dir: SortDir = SortDir.desc,
         limit: int = 20,
         offset: int = 0,
     ) -> tuple[list[Technician], int]:
         return await self.repo.get_all(
-            search=search, is_active=is_active, limit=limit, offset=offset
+            search=search,
+            is_active=is_active,
+            sort_by=sort_by,
+            sort_dir=sort_dir,
+            limit=limit,
+            offset=offset,
         )
 
     async def get_technician(self, technician_id: uuid.UUID) -> Technician:

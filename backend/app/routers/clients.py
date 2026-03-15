@@ -3,8 +3,14 @@ import uuid
 from fastapi import APIRouter, status
 
 from app.dependencies import ClientServiceDep, PaginationDep
-from app.schemas.base import PaginationMeta
-from app.schemas.client import ClientCreate, ClientRead, ClientsResponse, ClientUpdate
+from app.schemas.base import PaginationMeta, SortDir
+from app.schemas.client import (
+    ClientCreate,
+    ClientRead,
+    ClientSortBy,
+    ClientsResponse,
+    ClientUpdate,
+)
 
 router = APIRouter(prefix="/clients", tags=["clients"])
 
@@ -14,9 +20,13 @@ async def list_clients(
     pagination: PaginationDep,
     service: ClientServiceDep,
     search: str | None = None,
+    sort_by: ClientSortBy = ClientSortBy.created_at,
+    sort_dir: SortDir = SortDir.desc,
 ) -> ClientsResponse:
     items, total = await service.list_clients(
         search=search,
+        sort_by=sort_by,
+        sort_dir=sort_dir,
         limit=pagination.limit,
         offset=pagination.offset,
     )

@@ -9,7 +9,8 @@ from app.models.work_order import (
     WorkOrderStatus,
     WorkOrderStatusHistory,
 )
-from app.schemas.work_order import WorkOrderCreate, WorkOrderUpdate
+from app.schemas.base import SortDir
+from app.schemas.work_order import WorkOrderCreate, WorkOrderSortBy, WorkOrderUpdate
 
 
 class WorkOrderRepository:
@@ -23,6 +24,8 @@ class WorkOrderRepository:
         technician_id: uuid.UUID | None = None,
         client_id: uuid.UUID | None = None,
         priority: WorkOrderPriority | None = None,
+        sort_by: WorkOrderSortBy = WorkOrderSortBy.created_at,
+        sort_dir: SortDir = SortDir.desc,
         limit: int = 20,
         offset: int = 0,
     ) -> tuple[list[WorkOrder], int]:
@@ -42,10 +45,12 @@ class WorkOrderRepository:
             await self.db.execute(select(func.count()).select_from(stmt.subquery()))
         ).scalar_one()
 
+        col = getattr(WorkOrder, sort_by)
+        order_col = col.asc() if sort_dir == SortDir.asc else col.desc()
         items = list(
             (
                 await self.db.execute(
-                    stmt.order_by(WorkOrder.created_at.desc()).limit(limit).offset(offset)
+                    stmt.order_by(order_col).limit(limit).offset(offset)
                 )
             )
             .scalars()

@@ -3,10 +3,11 @@ import uuid
 from fastapi import APIRouter, status
 
 from app.dependencies import PaginationDep, TechnicianServiceDep
-from app.schemas.base import PaginationMeta
+from app.schemas.base import PaginationMeta, SortDir
 from app.schemas.technician import (
     TechnicianCreate,
     TechnicianRead,
+    TechnicianSortBy,
     TechnicianUpdate,
     TechniciansResponse,
 )
@@ -20,10 +21,14 @@ async def list_technicians(
     service: TechnicianServiceDep,
     search: str | None = None,
     is_active: bool | None = None,
+    sort_by: TechnicianSortBy = TechnicianSortBy.created_at,
+    sort_dir: SortDir = SortDir.desc,
 ) -> TechniciansResponse:
     items, total = await service.list_technicians(
         search=search,
         is_active=is_active,
+        sort_by=sort_by,
+        sort_dir=sort_dir,
         limit=pagination.limit,
         offset=pagination.offset,
     )

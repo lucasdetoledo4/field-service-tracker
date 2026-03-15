@@ -1,7 +1,13 @@
 import math
+from enum import StrEnum
 from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
+
+
+class SortDir(StrEnum):
+    asc = "asc"
+    desc = "desc"
 
 NameStr    = Annotated[str, StringConstraints(min_length=1, max_length=255, strip_whitespace=True)]
 PhoneStr   = Annotated[str, StringConstraints(min_length=1, max_length=50,  strip_whitespace=True)]

@@ -1,9 +1,15 @@
 import uuid
 from datetime import datetime
+from enum import StrEnum
 
 from pydantic import EmailStr
 
 from app.schemas.base import AddressStr, CustomBaseModel, NameStr, PaginationMeta, PhoneStr
+
+
+class ClientSortBy(StrEnum):
+    name = "name"
+    created_at = "created_at"
 
 
 class ClientCreate(CustomBaseModel):

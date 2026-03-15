@@ -4,7 +4,8 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.technician import Technician
-from app.schemas.technician import TechnicianCreate, TechnicianUpdate
+from app.schemas.base import SortDir
+from app.schemas.technician import TechnicianCreate, TechnicianSortBy, TechnicianUpdate
 
 
 class TechnicianRepository:
@@ -15,6 +16,8 @@ class TechnicianRepository:
         self,
         search: str | None = None,
         is_active: bool | None = None,
+        sort_by: TechnicianSortBy = TechnicianSortBy.created_at,
+        sort_dir: SortDir = SortDir.desc,
         limit: int = 20,
         offset: int = 0,
     ) -> tuple[list[Technician], int]:
@@ -31,10 +34,12 @@ class TechnicianRepository:
             await self.db.execute(select(func.count()).select_from(stmt.subquery()))
         ).scalar_one()
 
+        col = getattr(Technician, sort_by)
+        order_col = col.asc() if sort_dir == SortDir.asc else col.desc()
         items = list(
             (
                 await self.db.execute(
-                    stmt.order_by(Technician.created_at.desc()).limit(limit).offset(offset)
+                    stmt.order_by(order_col).limit(limit).offset(offset)
                 )
             )
             .scalars()

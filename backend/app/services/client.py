@@ -3,7 +3,8 @@ import uuid
 from app.exceptions import NotFoundError
 from app.models.client import Client
 from app.repositories.client import ClientRepository
-from app.schemas.client import ClientCreate, ClientUpdate
+from app.schemas.base import SortDir
+from app.schemas.client import ClientCreate, ClientSortBy, ClientUpdate
 
 
 class ClientService:
@@ -13,10 +14,14 @@ class ClientService:
     async def list_clients(
         self,
         search: str | None = None,
+        sort_by: ClientSortBy = ClientSortBy.created_at,
+        sort_dir: SortDir = SortDir.desc,
         limit: int = 20,
         offset: int = 0,
     ) -> tuple[list[Client], int]:
-        return await self.repo.get_all(search=search, limit=limit, offset=offset)
+        return await self.repo.get_all(
+            search=search, sort_by=sort_by, sort_dir=sort_dir, limit=limit, offset=offset
+        )
 
     async def get_client(self, client_id: uuid.UUID) -> Client:
         client = await self.repo.get_by_id(client_id)
