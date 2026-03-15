@@ -52,7 +52,7 @@ async def create_work_order(
     service: WorkOrderServiceDep,
     data: WorkOrderCreate,
 ) -> WorkOrderRead:
-    return await service.create_work_order(data)
+    return WorkOrderRead.model_validate(await service.create_work_order(data))
 
 
 @router.get("/{work_order_id}")
@@ -60,7 +60,7 @@ async def get_work_order(
     work_order_id: uuid.UUID,
     service: WorkOrderServiceDep,
 ) -> WorkOrderRead:
-    return await service.get_work_order(work_order_id)
+    return WorkOrderRead.model_validate(await service.get_work_order(work_order_id))
 
 
 @router.patch("/{work_order_id}")
@@ -69,7 +69,7 @@ async def update_work_order(
     service: WorkOrderServiceDep,
     data: WorkOrderUpdate,
 ) -> WorkOrderRead:
-    return await service.update_work_order(work_order_id, data)
+    return WorkOrderRead.model_validate(await service.update_work_order(work_order_id, data))
 
 
 @router.delete("/{work_order_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -86,7 +86,9 @@ async def transition_work_order_status(
     service: WorkOrderServiceDep,
     data: StatusTransitionRequest,
 ) -> WorkOrderRead:
-    return await service.transition_status(work_order_id, data.to_status, data.notes)
+    return WorkOrderRead.model_validate(
+        await service.transition_status(work_order_id, data.to_status, data.notes)
+    )
 
 
 @router.get("/{work_order_id}/history")
@@ -94,4 +96,7 @@ async def get_work_order_history(
     work_order_id: uuid.UUID,
     service: WorkOrderServiceDep,
 ) -> list[WorkOrderStatusHistoryRead]:
-    return await service.get_work_order_history(work_order_id)
+    return [
+        WorkOrderStatusHistoryRead.model_validate(h)
+        for h in await service.get_work_order_history(work_order_id)
+    ]

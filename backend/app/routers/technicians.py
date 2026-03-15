@@ -43,7 +43,7 @@ async def create_technician(
     service: TechnicianServiceDep,
     data: TechnicianCreate,
 ) -> TechnicianRead:
-    return await service.create_technician(data)
+    return TechnicianRead.model_validate(await service.create_technician(data))
 
 
 @router.get("/{technician_id}")
@@ -51,7 +51,7 @@ async def get_technician(
     technician_id: uuid.UUID,
     service: TechnicianServiceDep,
 ) -> TechnicianRead:
-    return await service.get_technician(technician_id)
+    return TechnicianRead.model_validate(await service.get_technician(technician_id))
 
 
 @router.patch("/{technician_id}")
@@ -60,7 +60,7 @@ async def update_technician(
     service: TechnicianServiceDep,
     data: TechnicianUpdate,
 ) -> TechnicianRead:
-    return await service.update_technician(technician_id, data)
+    return TechnicianRead.model_validate(await service.update_technician(technician_id, data))
 
 
 @router.delete("/{technician_id}", status_code=status.HTTP_204_NO_CONTENT)

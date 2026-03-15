@@ -4,7 +4,7 @@ from fastapi import APIRouter, status
 
 from app.dependencies import ClientServiceDep, PaginationDep
 from app.schemas.base import PaginationMeta
-from app.schemas.client import ClientCreate, ClientRead, ClientUpdate, ClientsResponse
+from app.schemas.client import ClientCreate, ClientRead, ClientsResponse, ClientUpdate
 
 router = APIRouter(prefix="/clients", tags=["clients"])
 
@@ -36,7 +36,7 @@ async def create_client(
     service: ClientServiceDep,
     data: ClientCreate,
 ) -> ClientRead:
-    return await service.create_client(data)
+    return ClientRead.model_validate(await service.create_client(data))
 
 
 @router.get("/{client_id}")
@@ -44,7 +44,7 @@ async def get_client(
     client_id: uuid.UUID,
     service: ClientServiceDep,
 ) -> ClientRead:
-    return await service.get_client(client_id)
+    return ClientRead.model_validate(await service.get_client(client_id))
 
 
 @router.patch("/{client_id}")
@@ -53,7 +53,7 @@ async def update_client(
     service: ClientServiceDep,
     data: ClientUpdate,
 ) -> ClientRead:
-    return await service.update_client(client_id, data)
+    return ClientRead.model_validate(await service.update_client(client_id, data))
 
 
 @router.delete("/{client_id}", status_code=status.HTTP_204_NO_CONTENT)
