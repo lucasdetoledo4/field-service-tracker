@@ -6,6 +6,7 @@ import { Theme } from '@radix-ui/themes'
 import '@radix-ui/themes/styles.css'
 import './index.css'
 import App from './App.tsx'
+import { ToastProvider } from './components/Toast'
 
 const queryClient = new QueryClient()
 
@@ -14,7 +15,9 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <Theme>
-          <App />
+          <ToastProvider>
+            <App />
+          </ToastProvider>
         </Theme>
       </QueryClientProvider>
     </BrowserRouter>
