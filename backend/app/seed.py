@@ -15,15 +15,11 @@ from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import func, select
 
-from app.database import async_session_maker
-from app.models.client import Client
-from app.models.technician import Technician
-from app.models.work_order import (
-    WorkOrder,
-    WorkOrderPriority,
-    WorkOrderStatus,
-    WorkOrderStatusHistory,
-)
+from app.core.database import async_session_maker
+from app.clients.models import Client
+from app.technicians.models import Technician
+from app.work_orders.enums import WorkOrderPriority, WorkOrderStatus
+from app.work_orders.models import WorkOrder, WorkOrderStatusHistory
 
 # ---------------------------------------------------------------------------
 # Data pools

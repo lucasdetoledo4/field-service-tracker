@@ -2,9 +2,10 @@ import uuid
 
 from fastapi import APIRouter, status
 
-from app.dependencies import ClientServiceDep, PaginationDep
-from app.schemas.base import PaginationMeta, SortDir
-from app.schemas.client import (
+from app.clients.dependencies import ClientServiceDep
+from app.core.dependencies import PaginationDep
+from app.core.schemas import PaginationMeta, SortDir
+from app.clients.schemas import (
     ClientCreate,
     ClientRead,
     ClientSortBy,

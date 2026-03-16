@@ -1,45 +1,13 @@
 import uuid
 from datetime import datetime
-from enum import StrEnum, auto
 
 from sqlalchemy import DateTime, ForeignKey, String, Text
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
-from app.models.base import Base, TimestampMixin, UUIDMixin
-
-
-class WorkOrderStatus(StrEnum):
-    CANCELLED = auto()
-    PENDING = auto()
-    ASSIGNED = auto()
-    IN_PROGRESS = auto()
-    COMPLETED = auto()
-
-    @classmethod
-    def rank_map(cls) -> list[tuple[str, int]]:
-        return [(p.value, i) for i, p in enumerate(cls)]
-
-
-class WorkOrderPriority(StrEnum):
-    LOW = auto()
-    MEDIUM = auto()
-    HIGH = auto()
-    URGENT = auto()
-
-    @classmethod
-    def rank_map(cls) -> list[tuple[str, int]]:
-        return [(p.value, i) for i, p in enumerate(cls)]
-
-
-VALID_TRANSITIONS: dict[WorkOrderStatus, set[WorkOrderStatus]] = {
-    WorkOrderStatus.PENDING: {WorkOrderStatus.ASSIGNED, WorkOrderStatus.CANCELLED},
-    WorkOrderStatus.ASSIGNED: {WorkOrderStatus.IN_PROGRESS, WorkOrderStatus.CANCELLED},
-    WorkOrderStatus.IN_PROGRESS: {WorkOrderStatus.COMPLETED, WorkOrderStatus.CANCELLED},
-    WorkOrderStatus.COMPLETED: set(),
-    WorkOrderStatus.CANCELLED: set(),
-}
+from app.work_orders.enums import WorkOrderPriority, WorkOrderStatus
+from app.core.base import Base, TimestampMixin, UUIDMixin
 
 
 class WorkOrder(UUIDMixin, TimestampMixin, Base):

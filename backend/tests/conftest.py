@@ -2,9 +2,12 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from app.database import get_db
-from app.main import app
-from app.models import Base
+from app.core.database import get_db
+from app.main import app as fastapi_app
+from app.core.base import Base
+import app.clients.models  # noqa: F401
+import app.technicians.models  # noqa: F401
+import app.work_orders.models  # noqa: F401
 
 TEST_DATABASE_URL = "sqlite+aiosqlite://"
 
@@ -27,7 +30,7 @@ async def client(db: AsyncSession):
     async def override_get_db():
         yield db
 
-    app.dependency_overrides[get_db] = override_get_db
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+    fastapi_app.dependency_overrides[get_db] = override_get_db
+    async with AsyncClient(transport=ASGITransport(app=fastapi_app), base_url="http://test") as ac:
         yield ac
-    app.dependency_overrides.clear()
+    fastapi_app.dependency_overrides.clear()

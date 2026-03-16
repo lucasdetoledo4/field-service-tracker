@@ -2,10 +2,11 @@ import uuid
 
 from fastapi import APIRouter, status
 
-from app.dependencies import PaginationDep, WorkOrderServiceDep
-from app.models.work_order import WorkOrderPriority, WorkOrderStatus
-from app.schemas.base import PaginationMeta, SortDir
-from app.schemas.work_order import (
+from app.core.dependencies import PaginationDep
+from app.work_orders.dependencies import WorkOrderServiceDep
+from app.work_orders.enums import WorkOrderPriority, WorkOrderStatus
+from app.core.schemas import PaginationMeta, SortDir
+from app.work_orders.schemas import (
     StatusTransitionRequest,
     WorkOrderCreate,
     WorkOrderRead,

@@ -2,9 +2,10 @@ import uuid
 
 from fastapi import APIRouter, status
 
-from app.dependencies import PaginationDep, TechnicianServiceDep
-from app.schemas.base import PaginationMeta, SortDir
-from app.schemas.technician import (
+from app.core.dependencies import PaginationDep
+from app.technicians.dependencies import TechnicianServiceDep
+from app.core.schemas import PaginationMeta, SortDir
+from app.technicians.schemas import (
     TechnicianCreate,
     TechnicianRead,
     TechnicianSortBy,

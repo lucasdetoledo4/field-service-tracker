@@ -11,15 +11,15 @@ from loguru import logger
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.starlette import StarletteIntegration
 
-from app.config import settings
-from app.constants import API_PREFIX
-from app.exceptions import AppError, InvalidTransitionError, NotFoundError
-from app.schemas.errors import ErrorResponse, FieldError
-from app.logging import configure_logging
-from app.routers.clients import router as clients_router
-from app.routers.health import router as health_router
-from app.routers.technicians import router as technicians_router
-from app.routers.work_orders import router as work_orders_router
+from app.core.config import settings
+from app.core.constants import API_PREFIX
+from app.core.exceptions import AppError, InvalidTransitionError, NotFoundError
+from app.core.errors import ErrorResponse, FieldError
+from app.core.logging import configure_logging
+from app.clients.router import router as clients_router
+from app.health.router import router as health_router
+from app.technicians.router import router as technicians_router
+from app.work_orders.router import router as work_orders_router
 
 configure_logging()
 

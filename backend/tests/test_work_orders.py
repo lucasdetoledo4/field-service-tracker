@@ -1,6 +1,6 @@
 from httpx import AsyncClient
 
-from app.constants import API_PREFIX
+from app.core.constants import API_PREFIX
 
 WORK_ORDERS = f"{API_PREFIX}/work-orders"
 

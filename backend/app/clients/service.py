@@ -1,10 +1,10 @@
 import uuid
 
-from app.exceptions import NotFoundError
-from app.models.client import Client
-from app.repositories.client import ClientRepository
-from app.schemas.base import SortDir
-from app.schemas.client import ClientCreate, ClientSortBy, ClientUpdate
+from app.core.exceptions import NotFoundError
+from app.clients.models import Client
+from app.clients.repository import ClientRepository
+from app.core.schemas import SortDir
+from app.clients.schemas import ClientCreate, ClientSortBy, ClientUpdate
 
 
 class ClientService:

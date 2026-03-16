@@ -4,7 +4,7 @@ from enum import StrEnum, auto
 
 from pydantic import EmailStr
 
-from app.schemas.base import CustomBaseModel, NameStr, PaginationMeta, PhoneStr, ShortStr
+from app.core.schemas import CustomBaseModel, NameStr, PaginationMeta, PhoneStr, ShortStr
 
 
 class TechnicianSortBy(StrEnum):

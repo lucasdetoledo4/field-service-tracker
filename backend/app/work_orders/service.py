@@ -1,17 +1,13 @@
 import uuid
 from datetime import datetime, timezone
 
-from app.exceptions import InvalidTransitionError, NotFoundError
-from app.models.work_order import (
-    VALID_TRANSITIONS,
-    WorkOrder,
-    WorkOrderPriority,
-    WorkOrderStatus,
-    WorkOrderStatusHistory,
-)
-from app.repositories.work_order import WorkOrderRepository
-from app.schemas.base import SortDir
-from app.schemas.work_order import WorkOrderCreate, WorkOrderSortBy, WorkOrderUpdate
+from app.core.exceptions import InvalidTransitionError, NotFoundError
+from app.work_orders.constants import VALID_TRANSITIONS
+from app.work_orders.enums import WorkOrderPriority, WorkOrderStatus
+from app.work_orders.models import WorkOrder, WorkOrderStatusHistory
+from app.work_orders.repository import WorkOrderRepository
+from app.core.schemas import SortDir
+from app.work_orders.schemas import WorkOrderCreate, WorkOrderSortBy, WorkOrderUpdate
 
 
 class WorkOrderService:

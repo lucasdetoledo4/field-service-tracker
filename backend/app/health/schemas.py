@@ -1,6 +1,6 @@
 from enum import StrEnum, auto
 
-from app.schemas.base import CustomBaseModel
+from app.core.schemas import CustomBaseModel
 
 
 class HealthStatus(StrEnum):

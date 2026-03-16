@@ -5,8 +5,8 @@ from typing import Annotated
 
 from pydantic import StringConstraints
 
-from app.models.work_order import WorkOrderPriority, WorkOrderStatus
-from app.schemas.base import CustomBaseModel, PaginationMeta, ShortStr
+from app.work_orders.enums import WorkOrderPriority, WorkOrderStatus
+from app.core.schemas import CustomBaseModel, PaginationMeta, ShortStr
 
 
 class WorkOrderSortBy(StrEnum):

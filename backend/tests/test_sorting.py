@@ -5,9 +5,9 @@ from httpx import AsyncClient
 from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.constants import API_PREFIX
-from app.models.client import Client
-from app.models.work_order import WorkOrder
+from app.core.constants import API_PREFIX
+from app.clients.models import Client
+from app.work_orders.models import WorkOrder
 
 CLIENTS = f"{API_PREFIX}/clients"
 TECHNICIANS = f"{API_PREFIX}/technicians"

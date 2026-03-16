@@ -3,9 +3,9 @@ import uuid
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.technician import Technician
-from app.schemas.base import SortDir
-from app.schemas.technician import TechnicianCreate, TechnicianSortBy, TechnicianUpdate
+from app.technicians.models import Technician
+from app.core.schemas import SortDir
+from app.technicians.schemas import TechnicianCreate, TechnicianSortBy, TechnicianUpdate
 
 
 class TechnicianRepository:

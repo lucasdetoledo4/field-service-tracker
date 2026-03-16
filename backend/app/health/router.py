@@ -2,8 +2,8 @@ from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
-from app.database import async_session_maker
-from app.schemas.health import ComponentStatus, HealthRead, HealthStatus
+from app.core.database import async_session_maker
+from app.health.schemas import ComponentStatus, HealthRead, HealthStatus
 
 router = APIRouter(tags=["health"])
 

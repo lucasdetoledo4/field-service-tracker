@@ -3,9 +3,9 @@ import uuid
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.client import Client
-from app.schemas.base import SortDir
-from app.schemas.client import ClientCreate, ClientSortBy, ClientUpdate
+from app.clients.models import Client
+from app.core.schemas import SortDir
+from app.clients.schemas import ClientCreate, ClientSortBy, ClientUpdate
 
 
 class ClientRepository:

@@ -3,16 +3,12 @@ import uuid
 from sqlalchemy import case, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.client import Client
-from app.models.technician import Technician
-from app.models.work_order import (
-    WorkOrder,
-    WorkOrderPriority,
-    WorkOrderStatus,
-    WorkOrderStatusHistory,
-)
-from app.schemas.base import SortDir
-from app.schemas.work_order import WorkOrderCreate, WorkOrderSortBy, WorkOrderUpdate
+from app.clients.models import Client
+from app.technicians.models import Technician
+from app.work_orders.enums import WorkOrderPriority, WorkOrderStatus
+from app.work_orders.models import WorkOrder, WorkOrderStatusHistory
+from app.core.schemas import SortDir
+from app.work_orders.schemas import WorkOrderCreate, WorkOrderSortBy, WorkOrderUpdate
 
 
 class WorkOrderRepository:

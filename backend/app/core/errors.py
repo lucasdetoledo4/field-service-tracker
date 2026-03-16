@@ -1,4 +1,4 @@
-from app.schemas.base import CustomBaseModel
+from app.core.schemas import CustomBaseModel
 
 
 class FieldError(CustomBaseModel):
