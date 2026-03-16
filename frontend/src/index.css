@@ -1,5 +1,48 @@
 @import "tailwindcss";
 
+/* react-phone-number-input — match Radix TextField style */
+.phone-field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  background: white;
+  border: 1px solid var(--gray-a7, #d1d5db);
+  border-radius: 6px;
+  font-size: 14px;
+  transition: box-shadow 0.15s;
+}
+.phone-field:focus-within {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
+  border-color: #16a34a;
+}
+.phone-field--error {
+  border-color: #ef4444;
+}
+.phone-field--error:focus-within {
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+.phone-field .PhoneInputCountrySelect {
+  appearance: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+.phone-field .PhoneInputInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: #0f172a;
+}
+.phone-field .PhoneInputInput::placeholder {
+  color: #94a3b8;
+}
+
 @keyframes toast-slide-in {
   from { opacity: 0; transform: translateX(100%); }
   to { opacity: 1; transform: translateX(0); }

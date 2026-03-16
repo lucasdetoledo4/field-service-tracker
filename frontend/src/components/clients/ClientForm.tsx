@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { Button, TextField, Flex, Grid, Text } from '@radix-ui/themes'
 import type { Client, ClientCreate } from '../../types/client'
+import PhoneField, { validatePhone } from '../PhoneField'
 
 interface Props {
   defaultValues?: Partial<Client>
@@ -10,8 +11,10 @@ interface Props {
   loading?: boolean
 }
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 export default function ClientForm({ defaultValues, onSubmit, onCancel, loading }: Props) {
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<ClientCreate>({
+  const { register, handleSubmit, reset, control, formState: { errors } } = useForm<ClientCreate>({
     defaultValues: {
       name: defaultValues?.name ?? '',
       email: defaultValues?.email ?? '',
@@ -53,15 +56,27 @@ export default function ClientForm({ defaultValues, onSubmit, onCancel, loading 
               size="2"
               type="email"
               placeholder="contact@example.com"
-              {...register('email')}
+              {...register('email', {
+                validate: v => !v || EMAIL_REGEX.test(v) || 'Invalid email address',
+              })}
             />
+            {errors.email && (
+              <Text size="1" className="text-red-500 mt-1 block">{errors.email.message}</Text>
+            )}
           </label>
           <label className="block">
             <Text size="2" weight="medium" className="text-slate-700 mb-1.5 block">Phone</Text>
-            <TextField.Root
-              size="2"
-              placeholder="+1 555 000 0000"
-              {...register('phone')}
+            <Controller
+              name="phone"
+              control={control}
+              rules={{ validate: validatePhone }}
+              render={({ field }) => (
+                <PhoneField
+                  value={field.value ?? undefined}
+                  onChange={v => field.onChange(v ?? '')}
+                  error={errors.phone?.message}
+                />
+              )}
             />
           </label>
         </Grid>

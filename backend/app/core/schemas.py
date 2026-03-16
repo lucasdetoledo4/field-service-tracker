@@ -14,7 +14,13 @@ NameStr = Annotated[
     str, StringConstraints(min_length=1, max_length=255, strip_whitespace=True)
 ]
 PhoneStr = Annotated[
-    str, StringConstraints(min_length=1, max_length=50, strip_whitespace=True)
+    str,
+    StringConstraints(
+        min_length=7,
+        max_length=50,
+        strip_whitespace=True,
+        pattern=r'^\+?[\d\s\(\)\-\.]+$',
+    ),
 ]
 AddressStr = Annotated[
     str, StringConstraints(min_length=1, max_length=500, strip_whitespace=True)

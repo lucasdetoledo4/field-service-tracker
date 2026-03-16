@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { Button, TextField, Flex, Grid, Text, Switch } from '@radix-ui/themes'
 import type { Technician, TechnicianCreate } from '../../types/technician'
+import PhoneField, { validatePhone } from '../PhoneField'
 
 interface Props {
   defaultValues?: Partial<Technician>
@@ -10,8 +11,10 @@ interface Props {
   loading?: boolean
 }
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 export default function TechnicianForm({ defaultValues, onSubmit, onCancel, loading }: Props) {
-  const { register, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<TechnicianCreate>({
+  const { register, handleSubmit, reset, watch, setValue, control, formState: { errors } } = useForm<TechnicianCreate>({
     defaultValues: {
       name: defaultValues?.name ?? '',
       email: defaultValues?.email ?? '',
@@ -53,11 +56,32 @@ export default function TechnicianForm({ defaultValues, onSubmit, onCancel, load
         <Grid columns="2" gap="3">
           <label className="block">
             <Text size="2" weight="medium" className="text-slate-700 mb-1.5 block">Email</Text>
-            <TextField.Root size="2" type="email" placeholder="jane@example.com" {...register('email')} />
+            <TextField.Root
+              size="2"
+              type="email"
+              placeholder="jane@example.com"
+              {...register('email', {
+                validate: v => !v || EMAIL_REGEX.test(v) || 'Invalid email address',
+              })}
+            />
+            {errors.email && (
+              <Text size="1" className="text-red-500 mt-1 block">{errors.email.message}</Text>
+            )}
           </label>
           <label className="block">
             <Text size="2" weight="medium" className="text-slate-700 mb-1.5 block">Phone</Text>
-            <TextField.Root size="2" placeholder="+1 555 000 0000" {...register('phone')} />
+            <Controller
+              name="phone"
+              control={control}
+              rules={{ validate: validatePhone }}
+              render={({ field }) => (
+                <PhoneField
+                  value={field.value ?? undefined}
+                  onChange={v => field.onChange(v ?? '')}
+                  error={errors.phone?.message}
+                />
+              )}
+            />
           </label>
         </Grid>
 
