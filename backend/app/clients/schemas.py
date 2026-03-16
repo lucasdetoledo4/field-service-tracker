@@ -14,8 +14,8 @@ class ClientSortBy(StrEnum):
 
 class ClientCreate(CustomBaseModel):
     name: NameStr
-    email: EmailStr | None = None
-    phone: PhoneStr | None = None
+    email: EmailStr
+    phone: PhoneStr
     address: AddressStr | None = None
 
 

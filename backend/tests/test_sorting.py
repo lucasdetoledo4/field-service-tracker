@@ -12,13 +12,15 @@ from app.work_orders.models import WorkOrder
 CLIENTS = f"{API_PREFIX}/clients"
 TECHNICIANS = f"{API_PREFIX}/technicians"
 WORK_ORDERS = f"{API_PREFIX}/work-orders"
+C_REQ = {"email": "test@example.com", "phone": "+15550100000"}
+T_REQ = {"email": "test@example.com", "phone": "+15550200000"}
 
 
 # --- Clients ---
 
 async def test_clients_sort_by_name_asc(client: AsyncClient):
-    await client.post(CLIENTS, json={"name": "Zebra Corp"})
-    await client.post(CLIENTS, json={"name": "Acme Inc"})
+    await client.post(CLIENTS, json={"name": "Zebra Corp", **C_REQ})
+    await client.post(CLIENTS, json={"name": "Acme Inc", **C_REQ})
     response = await client.get(CLIENTS, params={"sort_by": "name", "sort_dir": "asc"})
     assert response.status_code == 200
     names = [c["name"] for c in response.json()["clients"]]
@@ -26,8 +28,8 @@ async def test_clients_sort_by_name_asc(client: AsyncClient):
 
 
 async def test_clients_sort_by_name_desc(client: AsyncClient):
-    await client.post(CLIENTS, json={"name": "Acme Inc"})
-    await client.post(CLIENTS, json={"name": "Zebra Corp"})
+    await client.post(CLIENTS, json={"name": "Acme Inc", **C_REQ})
+    await client.post(CLIENTS, json={"name": "Zebra Corp", **C_REQ})
     response = await client.get(CLIENTS, params={"sort_by": "name", "sort_dir": "desc"})
     assert response.status_code == 200
     names = [c["name"] for c in response.json()["clients"]]
@@ -45,8 +47,8 @@ async def test_clients_invalid_sort_dir_returns_422(client: AsyncClient):
 
 
 async def test_clients_default_sort_is_created_at_desc(client: AsyncClient, db: AsyncSession):
-    r1 = await client.post(CLIENTS, json={"name": "First"})
-    r2 = await client.post(CLIENTS, json={"name": "Second"})
+    r1 = await client.post(CLIENTS, json={"name": "First", **C_REQ})
+    r2 = await client.post(CLIENTS, json={"name": "Second", **C_REQ})
     await db.execute(
         update(Client)
         .where(Client.id == uuid.UUID(r1.json()["id"]))
@@ -66,8 +68,8 @@ async def test_clients_default_sort_is_created_at_desc(client: AsyncClient, db: 
 # --- Technicians ---
 
 async def test_technicians_sort_by_name_asc(client: AsyncClient):
-    await client.post(TECHNICIANS, json={"name": "Zara"})
-    await client.post(TECHNICIANS, json={"name": "Alice"})
+    await client.post(TECHNICIANS, json={"name": "Zara", **T_REQ})
+    await client.post(TECHNICIANS, json={"name": "Alice", **T_REQ})
     response = await client.get(TECHNICIANS, params={"sort_by": "name", "sort_dir": "asc"})
     assert response.status_code == 200
     names = [t["name"] for t in response.json()["technicians"]]
@@ -75,8 +77,8 @@ async def test_technicians_sort_by_name_asc(client: AsyncClient):
 
 
 async def test_technicians_sort_by_name_desc(client: AsyncClient):
-    await client.post(TECHNICIANS, json={"name": "Alice"})
-    await client.post(TECHNICIANS, json={"name": "Zara"})
+    await client.post(TECHNICIANS, json={"name": "Alice", **T_REQ})
+    await client.post(TECHNICIANS, json={"name": "Zara", **T_REQ})
     response = await client.get(TECHNICIANS, params={"sort_by": "name", "sort_dir": "desc"})
     assert response.status_code == 200
     names = [t["name"] for t in response.json()["technicians"]]

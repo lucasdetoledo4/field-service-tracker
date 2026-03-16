@@ -3,10 +3,11 @@ from httpx import AsyncClient
 from app.core.constants import API_PREFIX
 
 CLIENTS = f"{API_PREFIX}/clients"
+REQ = {"email": "test@example.com", "phone": "+15550100000"}
 
 
 async def test_create_client(client: AsyncClient):
-    response = await client.post(CLIENTS, json={"name": "Acme Corp", "email": "acme@example.com"})
+    response = await client.post(CLIENTS, json={"name": "Acme Corp", "email": "acme@example.com", "phone": "+15550100001"})
     assert response.status_code == 201
     data = response.json()
     assert data["name"] == "Acme Corp"
@@ -15,8 +16,8 @@ async def test_create_client(client: AsyncClient):
 
 
 async def test_list_clients(client: AsyncClient):
-    await client.post(CLIENTS, json={"name": "Client A"})
-    await client.post(CLIENTS, json={"name": "Client B"})
+    await client.post(CLIENTS, json={"name": "Client A", **REQ})
+    await client.post(CLIENTS, json={"name": "Client B", **REQ})
     response = await client.get(CLIENTS)
     assert response.status_code == 200
     data = response.json()
@@ -26,8 +27,8 @@ async def test_list_clients(client: AsyncClient):
 
 
 async def test_list_clients_search(client: AsyncClient):
-    await client.post(CLIENTS, json={"name": "Acme Corp", "email": "acme@example.com"})
-    await client.post(CLIENTS, json={"name": "Beta LLC"})
+    await client.post(CLIENTS, json={"name": "Acme Corp", "email": "acme@example.com", "phone": "+15550100001"})
+    await client.post(CLIENTS, json={"name": "Beta LLC", **REQ})
     response = await client.get(CLIENTS, params={"search": "acme"})
     assert response.status_code == 200
     data = response.json()
@@ -37,7 +38,7 @@ async def test_list_clients_search(client: AsyncClient):
 
 async def test_list_clients_pagination(client: AsyncClient):
     for i in range(5):
-        await client.post(CLIENTS, json={"name": f"Client {i}"})
+        await client.post(CLIENTS, json={"name": f"Client {i}", **REQ})
     response = await client.get(CLIENTS, params={"page": 1, "page_size": 3})
     assert response.status_code == 200
     data = response.json()
@@ -47,7 +48,7 @@ async def test_list_clients_pagination(client: AsyncClient):
 
 
 async def test_get_client(client: AsyncClient):
-    create = await client.post(CLIENTS, json={"name": "Client X"})
+    create = await client.post(CLIENTS, json={"name": "Client X", **REQ})
     client_id = create.json()["id"]
     response = await client.get(f"{CLIENTS}/{client_id}")
     assert response.status_code == 200
@@ -55,7 +56,7 @@ async def test_get_client(client: AsyncClient):
 
 
 async def test_update_client(client: AsyncClient):
-    create = await client.post(CLIENTS, json={"name": "Old Name"})
+    create = await client.post(CLIENTS, json={"name": "Old Name", **REQ})
     client_id = create.json()["id"]
     response = await client.patch(f"{CLIENTS}/{client_id}", json={"name": "New Name"})
     assert response.status_code == 200
@@ -63,7 +64,7 @@ async def test_update_client(client: AsyncClient):
 
 
 async def test_delete_client(client: AsyncClient):
-    create = await client.post(CLIENTS, json={"name": "To Delete"})
+    create = await client.post(CLIENTS, json={"name": "To Delete", **REQ})
     client_id = create.json()["id"]
     response = await client.delete(f"{CLIENTS}/{client_id}")
     assert response.status_code == 204

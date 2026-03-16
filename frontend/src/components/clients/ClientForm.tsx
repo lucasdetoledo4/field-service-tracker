@@ -12,6 +12,7 @@ interface Props {
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const FIELD_ERROR = 'text-red-500 text-xs mt-1'
 
 export default function ClientForm({ defaultValues, onSubmit, onCancel, loading }: Props) {
   const { register, handleSubmit, reset, control, formState: { errors } } = useForm<ClientCreate>({
@@ -45,31 +46,36 @@ export default function ClientForm({ defaultValues, onSubmit, onCancel, loading 
             {...register('name', { required: 'Name is required' })}
           />
           {errors.name && (
-            <Text size="1" className="text-red-500 mt-1 block">{errors.name.message}</Text>
+            <p className={FIELD_ERROR}>{errors.name.message}</p>
           )}
         </label>
 
         <Grid columns="2" gap="3">
           <label className="block">
-            <Text size="2" weight="medium" className="text-slate-700 mb-1.5 block">Email</Text>
+            <Text size="2" weight="medium" className="text-slate-700 mb-1.5 block">
+              Email <span className="text-red-500">*</span>
+            </Text>
             <TextField.Root
               size="2"
               type="email"
               placeholder="contact@example.com"
               {...register('email', {
+                required: 'Email is required',
                 validate: v => !v || EMAIL_REGEX.test(v) || 'Invalid email address',
               })}
             />
             {errors.email && (
-              <Text size="1" className="text-red-500 mt-1 block">{errors.email.message}</Text>
+              <p className={FIELD_ERROR}>{errors.email.message}</p>
             )}
           </label>
           <label className="block">
-            <Text size="2" weight="medium" className="text-slate-700 mb-1.5 block">Phone</Text>
+            <Text size="2" weight="medium" className="text-slate-700 mb-1.5 block">
+              Phone <span className="text-red-500">*</span>
+            </Text>
             <Controller
               name="phone"
               control={control}
-              rules={{ validate: validatePhone }}
+              rules={{ required: 'Phone is required', validate: validatePhone }}
               render={({ field }) => (
                 <PhoneField
                   value={field.value ?? undefined}

@@ -15,8 +15,8 @@ class TechnicianSortBy(StrEnum):
 
 class TechnicianCreate(CustomBaseModel):
     name: NameStr
-    email: EmailStr | None = None
-    phone: PhoneStr | None = None
+    email: EmailStr
+    phone: PhoneStr
     specialty: ShortStr | None = None
     is_active: bool = True
 

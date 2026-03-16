@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Dialog, Spinner } from '@radix-ui/themes'
 import { Plus, Wrench, Search, ChevronDown, ChevronUp, ChevronsUpDown, Pencil } from 'lucide-react'
 import { useTechnicians, useCreateTechnician, useUpdateTechnician } from '../lib/queries/technicians'
+import { parseApiError } from '../lib/api'
 import TechnicianForm from '../components/technicians/TechnicianForm'
 import Pagination from '../components/Pagination'
 import { ActiveBadge } from '../components/Badges'
@@ -73,14 +74,14 @@ export default function TechniciansPage() {
   function handleCreate(data: TechnicianCreate) {
     createTechnician.mutate(data, {
       onSuccess: () => { setCreateOpen(false); toast.success('Technician created') },
-      onError: () => toast.error('Failed to create technician'),
+      onError: (error) => toast.error(parseApiError(error)),
     })
   }
 
   function handleUpdate(data: TechnicianCreate) {
     updateTechnician.mutate(data, {
       onSuccess: () => { setEditingId(null); toast.success('Technician updated') },
-      onError: () => toast.error('Failed to update technician'),
+      onError: (error) => toast.error(parseApiError(error)),
     })
   }
 

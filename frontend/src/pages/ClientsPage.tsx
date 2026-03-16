@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Dialog, Spinner } from '@radix-ui/themes'
 import { Plus, Users, Search, ChevronDown, ChevronUp, ChevronsUpDown, Pencil } from 'lucide-react'
 import { useClients, useCreateClient, useUpdateClient } from '../lib/queries/clients'
+import { parseApiError } from '../lib/api'
 import ClientForm from '../components/clients/ClientForm'
 import Pagination from '../components/Pagination'
 import { useToast } from '../components/Toast'
@@ -76,14 +77,14 @@ export default function ClientsPage() {
   function handleCreate(data: ClientCreate) {
     createClient.mutate(data, {
       onSuccess: () => { setCreateOpen(false); toast.success('Client created') },
-      onError: () => toast.error('Failed to create client'),
+      onError: (error) => toast.error(parseApiError(error)),
     })
   }
 
   function handleUpdate(data: ClientCreate) {
     updateClient.mutate(data, {
       onSuccess: () => { setEditingId(null); toast.success('Client updated') },
-      onError: () => toast.error('Failed to update client'),
+      onError: (error) => toast.error(parseApiError(error)),
     })
   }
 

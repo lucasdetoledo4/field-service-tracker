@@ -3,12 +3,13 @@ from httpx import AsyncClient
 from app.core.constants import API_PREFIX
 
 TECHNICIANS = f"{API_PREFIX}/technicians"
+REQ = {"email": "test@example.com", "phone": "+15550200000"}
 
 
 async def test_create_technician(client: AsyncClient):
     response = await client.post(
         TECHNICIANS,
-        json={"name": "Jane Doe", "email": "jane@example.com", "specialty": "HVAC"},
+        json={"name": "Jane Doe", "email": "jane@example.com", "phone": "+15550200001", "specialty": "HVAC"},
     )
     assert response.status_code == 201
     data = response.json()
@@ -19,8 +20,8 @@ async def test_create_technician(client: AsyncClient):
 
 
 async def test_list_technicians(client: AsyncClient):
-    await client.post(TECHNICIANS, json={"name": "Tech A"})
-    await client.post(TECHNICIANS, json={"name": "Tech B"})
+    await client.post(TECHNICIANS, json={"name": "Tech A", **REQ})
+    await client.post(TECHNICIANS, json={"name": "Tech B", **REQ})
     response = await client.get(TECHNICIANS)
     assert response.status_code == 200
     data = response.json()
@@ -30,8 +31,8 @@ async def test_list_technicians(client: AsyncClient):
 
 
 async def test_list_technicians_filter_active(client: AsyncClient):
-    await client.post(TECHNICIANS, json={"name": "Active Tech", "is_active": True})
-    await client.post(TECHNICIANS, json={"name": "Inactive Tech", "is_active": False})
+    await client.post(TECHNICIANS, json={"name": "Active Tech", "is_active": True, **REQ})
+    await client.post(TECHNICIANS, json={"name": "Inactive Tech", "is_active": False, **REQ})
     response = await client.get(TECHNICIANS, params={"is_active": "true"})
     assert response.status_code == 200
     data = response.json()
@@ -40,8 +41,8 @@ async def test_list_technicians_filter_active(client: AsyncClient):
 
 
 async def test_list_technicians_search(client: AsyncClient):
-    await client.post(TECHNICIANS, json={"name": "Jane Doe", "email": "jane@example.com"})
-    await client.post(TECHNICIANS, json={"name": "John Smith"})
+    await client.post(TECHNICIANS, json={"name": "Jane Doe", "email": "jane@example.com", "phone": "+15550200001"})
+    await client.post(TECHNICIANS, json={"name": "John Smith", **REQ})
     response = await client.get(TECHNICIANS, params={"search": "jane"})
     assert response.status_code == 200
     data = response.json()
@@ -50,7 +51,7 @@ async def test_list_technicians_search(client: AsyncClient):
 
 
 async def test_get_technician(client: AsyncClient):
-    create = await client.post(TECHNICIANS, json={"name": "Tech X"})
+    create = await client.post(TECHNICIANS, json={"name": "Tech X", **REQ})
     technician_id = create.json()["id"]
     response = await client.get(f"{TECHNICIANS}/{technician_id}")
     assert response.status_code == 200
@@ -58,7 +59,7 @@ async def test_get_technician(client: AsyncClient):
 
 
 async def test_update_technician(client: AsyncClient):
-    create = await client.post(TECHNICIANS, json={"name": "Old Name"})
+    create = await client.post(TECHNICIANS, json={"name": "Old Name", **REQ})
     technician_id = create.json()["id"]
     response = await client.patch(f"{TECHNICIANS}/{technician_id}", json={"name": "New Name", "is_active": False})
     assert response.status_code == 200
@@ -68,7 +69,7 @@ async def test_update_technician(client: AsyncClient):
 
 
 async def test_delete_technician(client: AsyncClient):
-    create = await client.post(TECHNICIANS, json={"name": "To Delete"})
+    create = await client.post(TECHNICIANS, json={"name": "To Delete", **REQ})
     technician_id = create.json()["id"]
     response = await client.delete(f"{TECHNICIANS}/{technician_id}")
     assert response.status_code == 204
