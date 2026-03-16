@@ -9,10 +9,19 @@ class SortDir(StrEnum):
     ASC = auto()
     DESC = auto()
 
-NameStr    = Annotated[str, StringConstraints(min_length=1, max_length=255, strip_whitespace=True)]
-PhoneStr   = Annotated[str, StringConstraints(min_length=1, max_length=50,  strip_whitespace=True)]
-AddressStr = Annotated[str, StringConstraints(min_length=1, max_length=500, strip_whitespace=True)]
-ShortStr   = Annotated[str, StringConstraints(min_length=1, max_length=255, strip_whitespace=True)]
+
+NameStr = Annotated[
+    str, StringConstraints(min_length=1, max_length=255, strip_whitespace=True)
+]
+PhoneStr = Annotated[
+    str, StringConstraints(min_length=1, max_length=50, strip_whitespace=True)
+]
+AddressStr = Annotated[
+    str, StringConstraints(min_length=1, max_length=500, strip_whitespace=True)
+]
+ShortStr = Annotated[
+    str, StringConstraints(min_length=1, max_length=255, strip_whitespace=True)
+]
 
 
 class CustomBaseModel(BaseModel):

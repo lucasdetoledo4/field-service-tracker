@@ -1,8 +1,10 @@
 import uuid
 
-from sqlalchemy import func, select
+from sqlalchemy import case, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.models.client import Client
+from app.models.technician import Technician
 from app.models.work_order import (
     WorkOrder,
     WorkOrderPriority,
@@ -45,7 +47,19 @@ class WorkOrderRepository:
             await self.db.execute(select(func.count()).select_from(stmt.subquery()))
         ).scalar_one()
 
-        col = getattr(WorkOrder, sort_by)
+        if sort_by == WorkOrderSortBy.PRIORITY:
+            col = case(*((WorkOrder.priority == v, r) for v, r in WorkOrderPriority.rank_map()))
+        elif sort_by == WorkOrderSortBy.STATUS:
+            col = case(*((WorkOrder.status == v, r) for v, r in WorkOrderStatus.rank_map()))
+        elif sort_by == WorkOrderSortBy.CLIENT_NAME:
+            stmt = stmt.join(Client, WorkOrder.client_id == Client.id, isouter=True)
+            col = Client.name
+        elif sort_by == WorkOrderSortBy.TECHNICIAN_NAME:
+            stmt = stmt.join(Technician, WorkOrder.technician_id == Technician.id, isouter=True)
+            col = Technician.name
+        else:
+            col = getattr(WorkOrder, sort_by)
+
         order_col = col.asc() if sort_dir == SortDir.ASC else col.desc()
         items = list(
             (

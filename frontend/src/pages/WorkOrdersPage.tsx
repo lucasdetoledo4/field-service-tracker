@@ -194,9 +194,9 @@ export default function WorkOrdersPage() {
                 </th>
                 <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider w-24">ID</th>
                 <SortTh label="Title"      field="title"        filters={filters} onSort={handleSort} />
-                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Client</th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Technician</th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                <SortTh label="Client"     field="client_name"     filters={filters} onSort={handleSort} />
+                <SortTh label="Technician" field="technician_name"  filters={filters} onSort={handleSort} />
+                <SortTh label="Status"     field="status"       filters={filters} onSort={handleSort} />
                 <SortTh label="Priority"   field="priority"     filters={filters} onSort={handleSort} />
                 <SortTh label="Scheduled"  field="scheduled_at" filters={filters} onSort={handleSort} />
                 <th className="px-5 py-3 w-10" />

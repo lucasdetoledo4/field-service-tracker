@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum, auto
 
 from sqlalchemy import DateTime, ForeignKey, String, Text
 from sqlalchemy import Enum as SAEnum
@@ -10,19 +10,27 @@ from sqlalchemy.sql import func
 from app.models.base import Base, TimestampMixin, UUIDMixin
 
 
-class WorkOrderStatus(str, Enum):
-    PENDING = "pending"
-    ASSIGNED = "assigned"
-    IN_PROGRESS = "in_progress"
-    COMPLETED = "completed"
-    CANCELLED = "cancelled"
+class WorkOrderStatus(StrEnum):
+    CANCELLED = auto()
+    PENDING = auto()
+    ASSIGNED = auto()
+    IN_PROGRESS = auto()
+    COMPLETED = auto()
+
+    @classmethod
+    def rank_map(cls) -> list[tuple[str, int]]:
+        return [(p.value, i) for i, p in enumerate(cls)]
 
 
-class WorkOrderPriority(str, Enum):
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
-    URGENT = "urgent"
+class WorkOrderPriority(StrEnum):
+    LOW = auto()
+    MEDIUM = auto()
+    HIGH = auto()
+    URGENT = auto()
+
+    @classmethod
+    def rank_map(cls) -> list[tuple[str, int]]:
+        return [(p.value, i) for i, p in enumerate(cls)]
 
 
 VALID_TRANSITIONS: dict[WorkOrderStatus, set[WorkOrderStatus]] = {
@@ -57,8 +65,12 @@ class WorkOrder(UUIDMixin, TimestampMixin, Base):
     technician_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("technicians.id", ondelete="SET NULL"), nullable=True, index=True
     )
-    scheduled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
-    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    scheduled_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True, index=True
+    )
+    completed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     status_history: Mapped[list["WorkOrderStatusHistory"]] = relationship(
         "WorkOrderStatusHistory",
@@ -84,4 +96,6 @@ class WorkOrderStatusHistory(UUIDMixin, Base):
         DateTime(timezone=True), server_default=func.now()
     )
 
-    work_order: Mapped["WorkOrder"] = relationship("WorkOrder", back_populates="status_history")
+    work_order: Mapped["WorkOrder"] = relationship(
+        "WorkOrder", back_populates="status_history"
+    )

@@ -109,7 +109,7 @@ async def test_work_orders_sort_by_title_desc(client: AsyncClient):
 
 
 async def test_work_orders_invalid_sort_by_returns_422(client: AsyncClient):
-    response = await client.get(WORK_ORDERS, params={"sort_by": "status"})
+    response = await client.get(WORK_ORDERS, params={"sort_by": "nonexistent"})
     assert response.status_code == 422
 
 

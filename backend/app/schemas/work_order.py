@@ -11,9 +11,15 @@ from app.schemas.base import CustomBaseModel, PaginationMeta, ShortStr
 
 class WorkOrderSortBy(StrEnum):
     TITLE = auto()
-    CREATED_AT = auto()
-    SCHEDULED_AT = auto()
+    DESCRIPTION = auto()
+    STATUS = auto()
     PRIORITY = auto()
+    SCHEDULED_AT = auto()
+    COMPLETED_AT = auto()
+    CREATED_AT = auto()
+    UPDATED_AT = auto()
+    CLIENT_NAME = auto()
+    TECHNICIAN_NAME = auto()
 
 _StrippedStr = Annotated[str, StringConstraints(strip_whitespace=True)]
 
